@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.1.7.0",
+        "changelog": "Fixed two Aa buttons appearing. The WebGPU Player inserts its tune button next to the gear after this button is added, so the check 'is my button right before the gear' failed and a second button was added. The check now looks at the whole button row.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.7.0.zip",
+        "checksum": "d1a65efaca8ffe5c98c6327077cb7378",
+        "timestamp": "2026-10-21T12:51:04Z"
+      },
+      {
         "version": "1.1.6.0",
         "changelog": "Fixed the Aa button sometimes missing after switching movie or episode. Jellyfin keeps more than one copy of the OSD button row and rebuilds them on each playback, but the script looked for a single button and could leave the visible row without one. It now puts a button next to every gear that lacks one.",
         "targetAbi": "12.1.0.0",

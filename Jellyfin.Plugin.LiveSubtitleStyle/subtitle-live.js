@@ -173,7 +173,8 @@
 
     // One button next to every OSD gear that lacks one. Jellyfin keeps more than one copy of the button row and
     // rebuilds them when the episode changes, so check each gear instead of looking for a single element.
-    const has = g => g.previousElementSibling?.classList.contains('btnSubLive');
+    // Anywhere in the same row: other plugins (the WebGPU tune button) insert their own buttons next to the gear
+    const has = g => !!g.parentElement?.querySelector(':scope > .btnSubLive');
     const mountOn = (gear, before) => {
       // Clone the gear: same element type, classes and styling as the other OSD buttons
       const btn = gear.cloneNode(false);
@@ -198,7 +199,7 @@
       const gears = gearsMissing();
       if (gears.length) gears.forEach(g => mountOn(g, true));
       // no gear in this build: go after the stock subtitles button instead
-      else if (!document.querySelector('.btnVideoOsdSettings')) document.querySelectorAll('.btnSubtitles').forEach(g => { if (!g.nextElementSibling?.classList.contains('btnSubLive')) mountOn(g, false); });
+      else if (!document.querySelector('.btnVideoOsdSettings')) document.querySelectorAll('.btnSubtitles').forEach(g => { if (!has(g)) mountOn(g, false); });
     };
     const route = () => {
       if (location.hash.startsWith('#/video')) mountAll();
