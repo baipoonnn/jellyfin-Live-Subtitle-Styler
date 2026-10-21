@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.5.0
+- Jellyfin Desktop: added an in-page colour picker (saturation/brightness square and hue slider) beside the hex box and swatches.
+
 ## 1.3.4.0
 - Jellyfin Desktop: the font box shows its own clickable suggestion list, because the desktop browser draws no datalist popup.
 

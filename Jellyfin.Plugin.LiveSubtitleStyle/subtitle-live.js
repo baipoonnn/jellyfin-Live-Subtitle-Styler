@@ -120,7 +120,13 @@
       #subLivePanel .sw input{width:3.4em;height:1.7em;padding:0;border:0;background:none;cursor:pointer}
       #subLivePanel .sw input::-webkit-color-swatch-wrapper{padding:0}
       #subLivePanel .sw input::-webkit-color-swatch{border:1px solid #ffffff55;border-radius:.3em}
-      #subLivePanel .cp{display:flex;align-items:center;gap:.5em}
+      #subLivePanel .cp{position:relative;display:flex;align-items:center;gap:.5em}
+      #subLivePanel .pk{width:1.9em;height:1.9em;padding:0;border-radius:.4em;border:1px solid #ffffff66;cursor:pointer;background:conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+      #subLivePanel .pp{position:absolute;right:0;top:100%;z-index:4;width:14em;box-sizing:border-box;margin-top:.4em;padding:.7em;border-radius:.8em;background:#1c1c20;border:1px solid #ffffff26;box-shadow:0 .5em 1.5em #000a}
+      #subLivePanel .pp[hidden]{display:none}
+      #subLivePanel .sv{position:relative;height:8em;border-radius:.5em;cursor:crosshair;touch-action:none;background:linear-gradient(to top,#000,#0000),linear-gradient(to right,#fff,#0000),hsl(var(--h,0),100%,50%)}
+      #subLivePanel .sv i{position:absolute;left:var(--x,0%);top:var(--y,0%);width:.9em;height:.9em;margin:-.45em 0 0 -.45em;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #000;pointer-events:none}
+      #subLivePanel .pp input.hu{width:100%;margin-top:.7em;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
       #subLivePanel .cp input{width:5.6em;box-sizing:border-box;padding:.5em .5em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#fff;font:inherit;text-transform:lowercase}
       #subLivePanel .sg{display:grid;grid-template-columns:repeat(4,1.3em);gap:.25em}
       #subLivePanel .sg button{width:1.3em;height:1.3em;padding:0;border-radius:.3em;border:1px solid #ffffff66;cursor:pointer}
@@ -156,7 +162,7 @@
     // The desktop browser cannot open the system colour dialog: a hex box with preset swatches instead
     const SWATCHES = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff9900', '#ff0000', '#cccccc', '#000000'];
     const color = k => desktop
-      ? `<div class="cp"><input data-k="${k}" type="text" maxlength="7" placeholder="#ffffff" autocomplete="off" spellcheck="false"><div class="sg">${SWATCHES.map(c => `<button type="button" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div></div>`
+      ? `<div class="cp"><input data-k="${k}" type="text" maxlength="7" placeholder="#ffffff" autocomplete="off" spellcheck="false"><button type="button" class="pk" title="Pick a color"></button><div class="sg">${SWATCHES.map(c => `<button type="button" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
       : `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     // The desktop browser draws no <datalist> popup: it gets its own suggestion list
     const DESK = FONTS.concat(['Leelawadee UI', 'Angsana New', 'Browallia New', 'Cordia New', 'DilleniaUPC', 'Noto Sans Thai', 'Malgun Gothic', 'Yu Gothic', 'Microsoft YaHei', 'Segoe UI Semibold', 'Bahnschrift']);
@@ -233,7 +239,48 @@
       if (k === 'edge') edgeUi();
       apply();
     });
+    // In-page colour picker (desktop): saturation/brightness square plus a hue slider, writing into the hex box
+    const toHex = (h, s, v) => '#' + [5, 3, 1].map(n => { const k = (n + h / 60) % 6; return Math.round((v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255).toString(16).padStart(2, '0'); }).join('');
+    const toHsv = x => {
+      const [r, g, b] = [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16) / 255), m = Math.max(r, g, b), d = m - Math.min(r, g, b);
+      return [d ? (m === r ? ((g - b) / d + 6) % 6 : m === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 : 0, m ? d / m : 0, m];
+    };
+    const pick = (pp, h, s, v) => {
+      pp._c = [h, s, v];
+      pp.querySelector('.sv').style.cssText = `--h:${h};--x:${s * 100}%;--y:${(1 - v) * 100}%`;
+      pp.querySelector('.hu').value = h;
+      const i = pp.parentElement.querySelector('input[data-k]');
+      i.value = toHex(h, s, v);
+      i.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    panel.addEventListener('pointerdown', e => {
+      const sv = e.target.closest('.sv');
+      if (!sv) return;
+      const move = ev => { const r = sv.getBoundingClientRect(), pp = sv.parentElement; pick(pp, pp._c[0], Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)), 1 - Math.min(1, Math.max(0, (ev.clientY - r.top) / r.height))); };
+      sv.setPointerCapture(e.pointerId);
+      sv.onpointermove = move;
+      sv.onpointerup = () => { sv.onpointermove = sv.onpointerup = null; };
+      move(e);
+    });
+    panel.addEventListener('input', e => {
+      const hu = e.target.closest('.hu');
+      if (hu) pick(hu.parentElement, +hu.value, hu.parentElement._c[1], hu.parentElement._c[2]);
+    });
     panel.addEventListener('click', e => {
+      const pk = e.target.closest('.pk');
+      if (pk) {
+        const pp = pk.closest('.cp').querySelector('.pp'), i = pk.closest('.cp').querySelector('input[data-k]');
+        panel.querySelectorAll('.pp').forEach(o => { if (o !== pp) o.hidden = true; });
+        pp.hidden = !pp.hidden;
+        if (!pp.hidden) {
+          const [h, s, v] = toHsv(hex(i.value, '#ffffff'));
+          // Show the current colour without rewriting it: pick() would round-trip it through HSV
+          pp._c = [h, s, v];
+          pp.querySelector('.sv').style.cssText = `--h:${h};--x:${s * 100}%;--y:${(1 - v) * 100}%`;
+          pp.querySelector('.hu').value = h;
+        }
+        return;
+      }
       const b = e.target.closest('[data-c]');
       if (!b) return;
       const i = b.closest('.cp').querySelector('input');
