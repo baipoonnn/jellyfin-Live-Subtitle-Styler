@@ -48,7 +48,7 @@
     const hex = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
     s = {
       size: num(s.size, .5, 5, D.size), color: hex(s.color, D.color), bg: num(s.bg, 0, 1, D.bg), bgColor: hex(s.bgColor, D.bgColor),
-      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .5, 6, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
+      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .1, 6, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
       font: typeof s.font === 'string' && s.font.length <= 60 ? s.font : '',
     };
 
@@ -64,12 +64,12 @@
         pushT = 0;
         const v = {
           size: Math.round(32 * s.size), font: s.font || 'sans-serif', color: s.color,
-          border_color: '#000000', border_size: s.edge ? Math.round(s.edgeW * 2) : 0,
+          border_color: '#000000',
           background_color: s.bgColor, background_transparency: Math.round(s.bg * 255).toString(16).padStart(2, '0'),
         };
         for (const k in v) if (j.subtitles[k] !== v[k]) j.subtitles[k] = v[k];
         // The settings list has no free position or box style, so own a marked block of the manual mpv config
-        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, '# /subLive'].join('\n');
+        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-size=${s.edge ? +s.edgeW.toFixed(2) : 0}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, '# /subLive'].join('\n');
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
         if (j.other.other_conf !== next) j.other.other_conf = next;
@@ -131,6 +131,8 @@
       #subLivePanel .fl[hidden]{display:none}
       #subLivePanel .fl button{display:block;width:100%;padding:.45em .7em;text-align:left;background:none;border:0;color:#fff;font:inherit;cursor:pointer}
       #subLivePanel .fl button:hover{background:#ffffff1a}
+      #subLivePanel .num{width:4.2em;box-sizing:border-box;padding:.4em .3em;text-align:center;border-radius:.5em;background:#ffffff0d;border:1px solid #ffffff14;color:#fff;font:inherit;font-size:.9em}
+      #subLivePanel .num:disabled{opacity:.5}
       #subLivePanel .tg{position:relative;width:3.2em;height:1.8em}
       #subLivePanel .tg input{position:absolute;inset:0;z-index:1;margin:0;opacity:0;cursor:pointer}
       #subLivePanel .tg i{position:absolute;inset:0;border-radius:99px;background:#ffffff26;transition:.15s}
@@ -155,7 +157,8 @@
     const svg = (d, n = 22) => `<svg viewBox="0 0 24 24" width="${n}" height="${n}" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
     const row = (icon, label, desc, control) =>
       `<div class="r"><span class="ic">${icon === 'font' ? '<b>Aa</b>' : svg(P[icon])}</span><div class="t">${label}${desc ? `<small>${desc}</small>` : ''}</div><div class="c">${control}</div></div>`;
-    const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
+    // The outline thickness can be typed as well as dragged (steps of 0.1)
+    const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}>` + (k === 'edgeW' ? `<input class="num" data-n="${k}" type="number" min=".1" max="6" step=".1">` : `<output data-o="${k}"></output>`);
     // The desktop browser cannot open the system colour dialog: an in-page picker instead (the hidden input holds the value)
     const color = k => desktop
       ? `<div class="cp"><input data-k="${k}" type="hidden"><button type="button" class="pk" title="Pick a color"></button><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
@@ -177,7 +180,7 @@
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
-      + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.5 max=6 step=.5'))
+      + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=6 step=.1'))
       + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
@@ -187,12 +190,15 @@
       if (i.type !== 'range') return;
       i.style.setProperty('--p', (i.value - i.min) / (i.max - i.min) * 100 + '%');
       const o = panel.querySelector(`[data-o="${i.dataset.k}"]`);
-      if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.dataset.k === 'edgeW' ? i.value + 'px' : i.value;
+      if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.value;
+      const n = panel.querySelector(`[data-n="${i.dataset.k}"]`);
+      if (n && document.activeElement !== n) n.value = i.value;
     };
     // The thickness slider is inert while Outline is off
     const edgeUi = () => {
       const w = panel.querySelector('[data-k=edgeW]');
       w.disabled = !s.edge;
+      panel.querySelector('[data-n=edgeW]').disabled = !s.edge;
       w.closest('.r').style.opacity = s.edge ? '' : '.45';
     };
     // Say whether the chosen font can actually be used in this browser
@@ -268,6 +274,13 @@
       move(e);
     });
     panel.addEventListener('input', e => {
+      const n = e.target.closest('[data-n]');
+      if (n && n.value !== '' && Number.isFinite(+n.value)) {
+        const r = panel.querySelector(`[data-k="${n.dataset.n}"]`);
+        r.value = Math.min(+r.max, Math.max(+r.min, +n.value));
+        r.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
       const hu = e.target.closest('.hu');
       if (hu) pick(hu.parentElement, +hu.value, hu.parentElement._c[1], hu.parentElement._c[2]);
     });
