@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1.0
+- The Font row now says whether the chosen font can be used in the browser you are watching in: green 'Installed on this device', red 'Not available in this browser, default font used', or 'Web font from Google Fonts'. Browsers with font-fingerprint protection (for example Brave Shields, Firefox with resistFingerprinting) hide installed fonts, in which case use a web font.
+
 ## 1.1.0.0
 - Redesigned subtitle style popup: header, icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once), and Thai serif web fonts close to Angsana and Dillenia were added (Noto Serif Thai, Trirong, Taviraj, Pridi).
 

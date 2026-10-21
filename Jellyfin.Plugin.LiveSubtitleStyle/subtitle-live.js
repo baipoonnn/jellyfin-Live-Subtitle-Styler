@@ -17,6 +17,14 @@
       link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@400;700&display=swap`;
       document.head.append(link);
     };
+    // True when this browser can really render the font: Thai + Latin text measures differently from every fallback
+    const avail = n => {
+      try {
+        const c = document.createElement('canvas').getContext('2d');
+        const w = f => { c.font = '40px ' + f; return c.measureText('mwiสวัสดีกขคง').width; };
+        return ['monospace', 'serif', 'sans-serif'].some(b => w(`"${n}",${b}`) !== w(b));
+      } catch { return null; }
+    };
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
 
@@ -96,7 +104,7 @@
     panel.hidden = true;
     panel.innerHTML = '<div class="h"><div class="bd">Aa</div><div><h3>Subtitle style</h3><p>Customize the appearance of subtitles</p></div></div>'
       + row('size', 'Size', '', range('size', 'min=.5 max=3 step=.05'))
-      + row('font', 'Font', '', fontControl)
+      + row('font', 'Font', '<span data-fs></span>', fontControl)
       + row('drop', 'Text color', '', color('color'))
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
@@ -112,19 +120,28 @@
       const o = panel.querySelector(`[data-o="${i.dataset.k}"]`);
       if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.value;
     };
+    // Say whether the chosen font can actually be used in this browser
+    const paintFont = () => {
+      const el = panel.querySelector('[data-fs]');
+      const n = s.font, ok = n && !WEB.includes(n) ? avail(n) : null;
+      el.textContent = !n ? 'Player default' : WEB.includes(n) ? 'Web font from Google Fonts' : ok === null ? '' : ok ? 'Installed on this device' : 'Not available in this browser, default font used';
+      el.style.color = !n || WEB.includes(n) || ok === null ? '' : ok ? '#6fd08c' : '#ff8a8a';
+    };
     const sync = () => panel.querySelectorAll('[data-k]').forEach(i => {
       i.type === 'checkbox' ? (i.checked = !!s[i.dataset.k]) : (i.value = s[i.dataset.k]);
       paint(i);
     });
     sync();
+    paintFont();
     panel.addEventListener('input', e => {
       const i = e.target, k = i.dataset.k;
       if (!k) return;
       s[k] = i.type === 'checkbox' ? +i.checked : i.type === 'range' ? +i.value : i.value;
       paint(i);
+      if (k === 'font') paintFont();
       apply();
     });
-    panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); apply(); };
+    panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); apply(); };
 
     // Chrome can list the fonts really installed on this device (asks permission once): fills the suggestions with exact names
     let scanned = false;
