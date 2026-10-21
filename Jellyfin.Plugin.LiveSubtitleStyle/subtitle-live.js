@@ -118,6 +118,10 @@
       #subLivePanel .sw input{width:3.4em;height:1.7em;padding:0;border:0;background:none;cursor:pointer}
       #subLivePanel .sw input::-webkit-color-swatch-wrapper{padding:0}
       #subLivePanel .sw input::-webkit-color-swatch{border:1px solid #ffffff55;border-radius:.3em}
+      #subLivePanel .cp{display:flex;align-items:center;gap:.5em}
+      #subLivePanel .cp input{width:5.6em;box-sizing:border-box;padding:.5em .5em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#fff;font:inherit;text-transform:lowercase}
+      #subLivePanel .sg{display:grid;grid-template-columns:repeat(4,1.3em);gap:.25em}
+      #subLivePanel .sg button{width:1.3em;height:1.3em;padding:0;border-radius:.3em;border:1px solid #ffffff66;cursor:pointer}
       #subLivePanel .tg{position:relative;width:3.2em;height:1.8em}
       #subLivePanel .tg input{position:absolute;inset:0;z-index:1;margin:0;opacity:0;cursor:pointer}
       #subLivePanel .tg i{position:absolute;inset:0;border-radius:99px;background:#ffffff26;transition:.15s}
@@ -143,7 +147,11 @@
     const row = (icon, label, desc, control) =>
       `<div class="r"><span class="ic">${icon === 'font' ? '<b>Aa</b>' : svg(P[icon])}</span><div class="t">${label}${desc ? `<small>${desc}</small>` : ''}</div><div class="c">${control}</div></div>`;
     const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
-    const color = k => `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
+    // The desktop browser cannot open the system colour dialog: a hex box with preset swatches instead
+    const SWATCHES = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff9900', '#ff0000', '#cccccc', '#000000'];
+    const color = k => desktop
+      ? `<div class="cp"><input data-k="${k}" type="text" maxlength="7" placeholder="#ffffff" autocomplete="off" spellcheck="false"><div class="sg">${SWATCHES.map(c => `<button type="button" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div></div>`
+      : `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
       + '<datalist id="subLiveFonts">' + FONTS.filter(n => desktop || avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb || desktop ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>';
 
@@ -209,11 +217,20 @@
     panel.addEventListener('input', e => {
       const i = e.target, k = i.dataset.k;
       if (!k) return;
+      // A typed colour counts only once it is a complete #rrggbb
+      if (i.type === 'text' && k !== 'font' && !/^#[0-9a-f]{6}$/i.test(i.value)) return;
       s[k] = i.type === 'checkbox' ? +i.checked : i.type === 'range' ? +i.value : i.value;
       paint(i);
       if (k === 'font') paintFont();
       if (k === 'edge') edgeUi();
       apply();
+    });
+    panel.addEventListener('click', e => {
+      const b = e.target.closest('[data-c]');
+      if (!b) return;
+      const i = b.closest('.cp').querySelector('input');
+      i.value = b.dataset.c;
+      i.dispatchEvent(new Event('input', { bubbles: true }));
     });
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 

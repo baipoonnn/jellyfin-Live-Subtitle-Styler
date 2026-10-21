@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.2.0",
+        "changelog": "Jellyfin Desktop: the colour pickers now use a hex box with preset swatches, because the desktop browser cannot open the system colour dialog.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.2.0.zip",
+        "checksum": "cc72226b866159f876a85d142be0517c",
+        "timestamp": "2026-10-21T15:49:00Z"
+      },
+      {
         "version": "1.3.1.0",
         "changelog": "Jellyfin Desktop: the font box now suggests common system fonts and says the font must be installed on the computer, instead of running browser font checks and Google Fonts lookups that do not apply to mpv.",
         "targetAbi": "12.1.0.0",

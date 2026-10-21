@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.2.0
+- Jellyfin Desktop: the colour pickers now use a hex box with preset swatches, because the desktop browser cannot open the system colour dialog.
+
 ## 1.3.1.0
 - Jellyfin Desktop: the font box now suggests common system fonts and says the font must be installed on the computer, instead of running browser font checks and Google Fonts lookups that do not apply to mpv.
 
