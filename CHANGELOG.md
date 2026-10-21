@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.12.0
+- Outline thickness limit raised from 6 to 15.
+
 ## 1.3.11.0
 - Outline thickness can be typed as well as dragged, in steps of 0.1 (0.1 to 6). On the desktop client it is sent to mpv as a decimal sub-border-size, 1:1 instead of doubled, so it no longer looks much thicker than in the browser.
 

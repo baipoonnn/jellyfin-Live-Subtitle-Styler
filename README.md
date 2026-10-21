@@ -40,7 +40,7 @@ Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAm
 | Font | installed font or Google Fonts family | player default |
 | Text color / Background color | any | white / black |
 | Background opacity | 0 to 100 | 0 |
-| Outline / Outline thickness | on, 0.1 to 6 px (drag or type, steps of 0.1) | on, 1.5 px |
+| Outline / Outline thickness | on, 0.1 to 15 px (drag or type, steps of 0.1) | on, 1.5 px |
 | Position | -10 to 40 (% from the bottom; below 0 goes lower than the edge) | 8 |
 
 Only text subtitles (SRT, WebVTT) are restyled. ASS/SSA and PGS keep their own styling.

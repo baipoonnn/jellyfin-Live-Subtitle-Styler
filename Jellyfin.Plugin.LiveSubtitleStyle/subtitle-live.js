@@ -48,7 +48,7 @@
     const hex = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
     s = {
       size: num(s.size, .5, 5, D.size), color: hex(s.color, D.color), bg: num(s.bg, 0, 1, D.bg), bgColor: hex(s.bgColor, D.bgColor),
-      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .1, 6, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
+      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .1, 15, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
       font: typeof s.font === 'string' && s.font.length <= 60 ? s.font : '',
     };
 
@@ -158,7 +158,7 @@
     const row = (icon, label, desc, control) =>
       `<div class="r"><span class="ic">${icon === 'font' ? '<b>Aa</b>' : svg(P[icon])}</span><div class="t">${label}${desc ? `<small>${desc}</small>` : ''}</div><div class="c">${control}</div></div>`;
     // The outline thickness can be typed as well as dragged (steps of 0.1)
-    const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}>` + (k === 'edgeW' ? `<input class="num" data-n="${k}" type="number" min=".1" max="6" step=".1">` : `<output data-o="${k}"></output>`);
+    const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}>` + (k === 'edgeW' ? `<input class="num" data-n="${k}" type="number" min=".1" max="15" step=".1">` : `<output data-o="${k}"></output>`);
     // The desktop browser cannot open the system colour dialog: an in-page picker instead (the hidden input holds the value)
     const color = k => desktop
       ? `<div class="cp"><input data-k="${k}" type="hidden"><button type="button" class="pk" title="Pick a color"></button><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
@@ -180,7 +180,7 @@
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
-      + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=6 step=.1'))
+      + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=15 step=.1'))
       + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
