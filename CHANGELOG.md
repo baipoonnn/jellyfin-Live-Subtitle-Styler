@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.0.0
+- Redesigned subtitle style popup: header, icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once), and Thai serif web fonts close to Angsana and Dillenia were added (Noto Serif Thai, Trirong, Taviraj, Pridi).
+
 ## 1.0.9.0
 - Added Google Fonts with Thai support (Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai), listed as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices without the Windows Thai fonts.
 

@@ -1,12 +1,13 @@
 // Live subtitle styling for Jellyfin web (works with stock and WebGPU players).
-// Adds a CC button to the player OSD next to the gear. One <style> driven by values: changes repaint instantly.
+// Adds an "Aa" button to the player OSD next to the gear. One <style> driven by values: changes repaint instantly.
 (() => {
   const init = () => {
     const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, pos: 8, font: '' };
+    const ACC = 'var(--theme-primary-color,#e50914)';
     // Suggestions only: any font installed on the viewing device can be typed in
     const FONTS = ['Angsana New', 'AngsanaUPC', 'DilleniaUPC', 'Cordia New', 'Browallia New', 'TH Sarabun New', 'Leelawadee UI', 'Tahoma', 'Arial', 'Verdana', 'Segoe UI', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
-    // Google Fonts with Thai glyphs, fetched only when one is selected (works on any device)
-    const WEB = ['Sarabun', 'Mitr', 'Prompt', 'Kanit', 'Noto Sans Thai'];
+    // Google Fonts with Thai glyphs, fetched only when one is selected (works on any device); the serif ones resemble Angsana and Dillenia
+    const WEB = ['Sarabun', 'Mitr', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Noto Serif Thai', 'Trirong', 'Taviraj', 'Pridi'];
     const loaded = new Set();
     const loadWeb = name => {
       if (!WEB.includes(name) || loaded.has(name)) return;
@@ -19,72 +20,146 @@
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
 
+    // Subtitle styling: rewritten on every change
     const css = document.createElement('style');
     document.head.append(css);
     const apply = () => {
       try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
       const bg = s.bgColor + Math.round(s.bg * 255).toString(16).padStart(2, '0');
       loadWeb(s.font);
-      const ff = s.font ? `font-family:"${s.font.replace(/["\;{}]/g, '')}", sans-serif` : '';
+      const ff = s.font ? `font-family:"${s.font.replace(/["\\;{}]/g, '')}", sans-serif` : '';
       const sh = s.edge ? '0 0 4px #000,1px 1px 2px #000,-1px -1px 2px #000' : 'none';
       // !important beats the inline styles Jellyfin sets on the subtitle element
       css.textContent = `
         .videoSubtitlesInner{font-size:${s.size}em!important;color:${s.color}!important;background:${bg}!important;text-shadow:${sh}!important;${ff ? ff + '!important' : ''}}
         .videoSubtitles{bottom:${s.pos}%!important}
-        .htmlvideoplayer::cue{color:${s.color};background-color:${bg};text-shadow:${sh};${ff}}
-        #subLivePanel{position:fixed;z-index:99999;width:18em;padding:1em 1.2em;border-radius:.4em;background:rgba(28,28,28,.97);color:#fff;font-size:1em;box-shadow:0 .4em 1.5em #000a}
-        #subLivePanel h3{margin:0 0 .6em;font-size:1.05em;font-weight:500}
-        #subLivePanel .r{display:flex;align-items:center;justify-content:space-between;gap:1em;margin:.5em 0}
-        #subLivePanel input[type=range]{flex:1;max-width:9em;accent-color:var(--theme-primary-color,#e50914)}
-        #subLivePanel input[type=checkbox]{width:1.2em;height:1.2em;accent-color:var(--theme-primary-color,#e50914)}
-        #subLivePanel input[type=color]{width:2.4em;height:1.6em;padding:0;border:1px solid #fff4;border-radius:.2em;background:none}
-        #subLivePanel input[type=text]{flex:1;max-width:10em;padding:.3em .4em;border:1px solid #fff3;border-radius:.25em;background:#2a2a2a;color:#fff;font:inherit}
-        #subLivePanel button{margin-top:.4em;padding:.4em 1em;border:0;border-radius:.25em;background:#fff2;color:#fff;cursor:pointer}
-        #subLivePanel button:hover{background:#fff4}`;
+        .htmlvideoplayer::cue{color:${s.color};background-color:${bg};text-shadow:${sh};${ff}}`;
     };
     apply();
 
-    const row = (label, key, attrs) => `<label class="r">${label}<input data-k="${key}" ${attrs}></label>`;
+    // Popup styling: static
+    const ui = document.createElement('style');
+    ui.textContent = `
+      #subLivePanel{position:fixed;z-index:99999;width:28em;max-width:calc(100vw - 16px);max-height:calc(100vh - 110px);overflow:auto;box-sizing:border-box;padding:1.1em 1.2em;border-radius:1.1em;background:rgba(18,18,20,.97);border:1px solid #ffffff1f;box-shadow:0 1em 3em #000c;color:#fff;font-size:15px;line-height:1.3;font-family:inherit}
+      #subLivePanel[hidden]{display:none}
+      #subLivePanel .h{display:flex;gap:.9em;align-items:center;padding-bottom:.9em;margin-bottom:.5em;border-bottom:1px solid #ffffff1a}
+      #subLivePanel .bd{flex:none;width:2.9em;height:2.9em;border-radius:.7em;display:grid;place-items:center;font-weight:600;font-size:1.3em;background:linear-gradient(#7a1019,#4d0a10);border:1px solid #c4202e66}
+      #subLivePanel h3{margin:0;font-size:1.25em;font-weight:600}
+      #subLivePanel .h p{margin:.15em 0 0;color:#ffffff99;font-size:.85em}
+      #subLivePanel .r{display:flex;align-items:center;gap:.8em;padding:.35em 0}
+      #subLivePanel .ic{flex:none;width:2.4em;height:2.4em;border-radius:.6em;display:grid;place-items:center;background:#ffffff0d;border:1px solid #ffffff14;color:#ffffffcc}
+      #subLivePanel .t{flex:1;min-width:0;font-weight:500}
+      #subLivePanel .t small{display:block;font-weight:400;color:#ffffff80;font-size:.8em}
+      #subLivePanel .c{flex:none;display:flex;align-items:center;gap:.6em}
+      #subLivePanel output{min-width:2.6em;padding:.4em .3em;text-align:center;border-radius:.5em;background:#ffffff0d;border:1px solid #ffffff14;font-size:.9em}
+      #subLivePanel input[type=range]{-webkit-appearance:none;appearance:none;width:7.5em;height:.45em;margin:0;border-radius:99px;outline:0;background:linear-gradient(to right,${ACC} var(--p,50%),#ffffff2e var(--p,50%))}
+      #subLivePanel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:1.25em;height:1.25em;border-radius:50%;background:#fff;border:.28em solid ${ACC};cursor:pointer}
+      #subLivePanel input[type=range]::-moz-range-thumb{width:.7em;height:.7em;border-radius:50%;background:#fff;border:.28em solid ${ACC};cursor:pointer}
+      #subLivePanel .fs{position:relative;width:11.5em}
+      #subLivePanel .fs input{width:100%;box-sizing:border-box;padding:.55em 2.1em .55em .7em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#fff;font:inherit}
+      #subLivePanel .fs input::-webkit-calendar-picker-indicator{position:absolute;right:0;top:0;width:2.2em;height:100%;opacity:0;cursor:pointer}
+      #subLivePanel .fs svg{position:absolute;right:.6em;top:50%;margin-top:-.6em;pointer-events:none;color:#ffffffcc}
+      #subLivePanel .sw{display:flex;align-items:center;gap:.3em;padding:.3em .5em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#ffffffcc}
+      #subLivePanel .sw input{width:3.4em;height:1.7em;padding:0;border:0;background:none;cursor:pointer}
+      #subLivePanel .sw input::-webkit-color-swatch-wrapper{padding:0}
+      #subLivePanel .sw input::-webkit-color-swatch{border:1px solid #ffffff55;border-radius:.3em}
+      #subLivePanel .tg{position:relative;width:3.2em;height:1.8em}
+      #subLivePanel .tg input{position:absolute;inset:0;z-index:1;margin:0;opacity:0;cursor:pointer}
+      #subLivePanel .tg i{position:absolute;inset:0;border-radius:99px;background:#ffffff26;transition:.15s}
+      #subLivePanel .tg i::after{content:'';position:absolute;top:.2em;left:.2em;width:1.4em;height:1.4em;border-radius:50%;background:#fff;transition:.15s}
+      #subLivePanel .tg input:checked+i{background:${ACC}}
+      #subLivePanel .tg input:checked+i::after{left:1.6em}
+      #subLivePanel .f{margin-top:.5em;padding-top:.8em;border-top:1px solid #ffffff1a}
+      #subLivePanel .rs{display:flex;align-items:center;gap:.6em;padding:.65em 1em;border-radius:.7em;background:#ffffff0d;border:1px solid #ffffff1f;color:#fff;cursor:pointer;font:inherit}
+      #subLivePanel .rs:hover{background:#ffffff1a}`;
+    document.head.append(ui);
+
+    const P = {
+      size: 'M3 4v3h4v10h3V7h4V4H3zm15 1l-3 3h2v8h-2l3 3 3-3h-2V8h2l-3-3z',
+      drop: 'M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z',
+      alpha: 'M17.66 8L12 2.35 6.34 8C4.78 9.56 4 11.64 4 13.64s.78 4.11 2.34 5.67 3.61 2.35 5.66 2.35 4.1-.79 5.66-2.35S20 15.64 20 13.64 19.22 9.56 17.66 8zM6 14c.01-2 .62-3.27 1.76-4.4L12 5.27l4.24 4.38C17.38 10.77 17.99 12 18 14H6z',
+      edge: 'M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z',
+      pos: 'M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z',
+      reset: 'M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z',
+      chev: 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z',
+    };
+    const svg = (d, n = 22) => `<svg viewBox="0 0 24 24" width="${n}" height="${n}" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
+    const row = (icon, label, desc, control) =>
+      `<div class="r"><span class="ic">${icon === 'font' ? '<b>Aa</b>' : svg(P[icon])}</span><div class="t">${label}${desc ? `<small>${desc}</small>` : ''}</div><div class="c">${control}</div></div>`;
+    const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
+    const color = k => `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
+    const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
+      + '<datalist id="subLiveFonts">' + FONTS.map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
+
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
     panel.hidden = true;
-    const fontRow = '<label class="r">Font<input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false"></label>'
-      + '<datalist id="subLiveFonts">' + FONTS.map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
-    panel.innerHTML = '<h3>Subtitle style</h3>'
-      + row('Size', 'size', 'type=range min=.5 max=3 step=.05') + fontRow + row('Color', 'color', 'type=color')
-      + row('Background', 'bg', 'type=range min=0 max=1 step=.05') + row('Bg color', 'bgColor', 'type=color')
-      + row('Outline', 'edge', 'type=checkbox') + row('Position', 'pos', 'type=range min=0 max=40 step=1')
-      + '<button data-reset>Reset</button>';
+    panel.innerHTML = '<div class="h"><div class="bd">Aa</div><div><h3>Subtitle style</h3><p>Customize the appearance of subtitles</p></div></div>'
+      + row('size', 'Size', '', range('size', 'min=.5 max=3 step=.05'))
+      + row('font', 'Font', '', fontControl)
+      + row('drop', 'Text color', '', color('color'))
+      + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
+      + row('drop', 'Background color', '', color('bgColor'))
+      + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
+      + row('pos', 'Position', 'Move subtitles up or down', range('pos', 'min=0 max=40 step=1'))
+      + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 
+    // Slider fill and the number box beside it
+    const paint = i => {
+      if (i.type !== 'range') return;
+      i.style.setProperty('--p', (i.value - i.min) / (i.max - i.min) * 100 + '%');
+      const o = panel.querySelector(`[data-o="${i.dataset.k}"]`);
+      if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.value;
+    };
     const sync = () => panel.querySelectorAll('[data-k]').forEach(i => {
       i.type === 'checkbox' ? (i.checked = !!s[i.dataset.k]) : (i.value = s[i.dataset.k]);
+      paint(i);
     });
     sync();
     panel.addEventListener('input', e => {
       const i = e.target, k = i.dataset.k;
       if (!k) return;
       s[k] = i.type === 'checkbox' ? +i.checked : i.type === 'range' ? +i.value : i.value;
+      paint(i);
       apply();
     });
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); apply(); };
 
-    const CC = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M9 4v3h5v12h3V7h5V4H9zm-6 8h3v7h3v-7h3V9H3v3z"/></svg>';
+    // Chrome can list the fonts really installed on this device (asks permission once): fills the suggestions with exact names
+    let scanned = false;
+    panel.querySelector('input[data-k=font]').addEventListener('focus', () => {
+      if (scanned || !window.queryLocalFonts) return;
+      scanned = true;
+      window.queryLocalFonts().then(list => {
+        const list_ = panel.querySelector('#subLiveFonts');
+        const have = new Set([...list_.options].map(o => o.value));
+        [...new Set(list.map(f => f.family))].sort().forEach(n => {
+          if (have.has(n)) return;
+          const o = document.createElement('option');
+          o.value = n;
+          list_.append(o);
+        });
+      }).catch(() => {});
+    });
+
+    // "Aa" as an SVG glyph: clearly different from the stock subtitle-track button
+    const AA = '<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><text x="12" y="17" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" font-family="Arial,sans-serif">Aa</text></svg>';
 
     // Put the button in the OSD button row, left of the gear; the OSD is rebuilt per playback so retry briefly
     const mount = (tries = 12) => {
       if (document.getElementById('btnSubLive')) return;
-      // gear first; else the stock subtitles button (we go after it); else the end of the OSD button row
+      // gear first; else the stock subtitles button (we go after it)
       const gear = document.querySelector('.btnVideoOsdSettings');
       const anchor = gear || document.querySelector('.btnSubtitles');
       if (!anchor) { if (tries) setTimeout(() => mount(tries - 1), 500); return; }
       // Clone the gear: same element type, classes and styling as the other OSD buttons
-      const btn = (gear || anchor).cloneNode(false);
+      const btn = anchor.cloneNode(false);
       btn.id = 'btnSubLive';
       btn.classList.remove('btnVideoOsdSettings', 'btnSubtitles', 'hide');
       btn.title = 'Subtitle style';
       btn.setAttribute('aria-label', 'Subtitle style');
-      btn.innerHTML = CC;
+      btn.innerHTML = AA;
       btn.onclick = () => {
         panel.hidden = !panel.hidden;
         if (!panel.hidden) {
