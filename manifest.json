@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.10.0",
+        "changelog": "Jellyfin Desktop: the font list checks the whole Windows and Office font set (about 380 names) and shows only the fonts the computer can render, in alphabetical order.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.10.0.zip",
+        "checksum": "73449fc9d55aad5e7b44065f0bd2bb00",
+        "timestamp": "2026-10-21T16:28:48Z"
+      },
+      {
         "version": "1.3.9.0",
         "changelog": "A key that something else cancels before the font box gets it (G, for example) is now typed anyway. Desktop: about 190 common font names are checked, and a typed font that is installed is added to the list.",
         "targetAbi": "12.1.0.0",

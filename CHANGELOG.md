@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.10.0
+- Jellyfin Desktop: the font list checks the whole Windows and Office font set (about 380 names) and shows only the fonts the computer can render, in alphabetical order.
+
 ## 1.3.9.0
 - A key that something else cancels before the font box gets it (G, for example) is now typed anyway. Desktop: about 190 common font names are checked, and a typed font that is installed is added to the list.
 
