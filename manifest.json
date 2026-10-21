@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.1.2.0",
+        "changelog": "The font suggestions now list only fonts this browser can actually use (installed system fonts, plus the Google web fonts), so a font that cannot be rendered is no longer offered.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.2.0.zip",
+        "checksum": "def12f58eee4b3daa24ba5944964129c",
+        "timestamp": "2026-10-21T12:23:16Z"
+      },
+      {
         "version": "1.1.1.0",
         "changelog": "The Font row now says whether the chosen font can be used in the browser you are watching in: green 'Installed on this device', red 'Not available in this browser, default font used', or 'Web font from Google Fonts'. Browsers with font-fingerprint protection (for example Brave Shields, Firefox with resistFingerprinting) hide installed fonts, in which case use a web font.",
         "targetAbi": "12.1.0.0",

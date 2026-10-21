@@ -4,7 +4,7 @@
   const init = () => {
     const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, pos: 8, font: '' };
     const ACC = 'var(--theme-primary-color,#e50914)';
-    // Suggestions only: any font installed on the viewing device can be typed in
+    // Suggestions, filtered to the fonts this browser can really use (see avail); any installed font can still be typed in
     const FONTS = ['Angsana New', 'AngsanaUPC', 'DilleniaUPC', 'Cordia New', 'Browallia New', 'TH Sarabun New', 'Leelawadee UI', 'Tahoma', 'Arial', 'Verdana', 'Segoe UI', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
     // Google Fonts with Thai glyphs, fetched only when one is selected (works on any device); the serif ones resemble Angsana and Dillenia
     const WEB = ['Sarabun', 'Mitr', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Noto Serif Thai', 'Trirong', 'Taviraj', 'Pridi'];
@@ -97,7 +97,7 @@
     const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
     const color = k => `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
-      + '<datalist id="subLiveFonts">' + FONTS.map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
+      + '<datalist id="subLiveFonts">' + FONTS.filter(n => avail(n) !== false).map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
 
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
