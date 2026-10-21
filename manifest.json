@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.6.0",
+        "changelog": "Jellyfin Desktop: colour rows now show only the picker button (current colour); the hex box and preset swatches are removed.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.6.0.zip",
+        "checksum": "80ee9d2924cf2cd3292df38342639aba",
+        "timestamp": "2026-10-21T16:03:30Z"
+      },
+      {
         "version": "1.3.5.0",
         "changelog": "Jellyfin Desktop: added an in-page colour picker (saturation/brightness square and hue slider) beside the hex box and swatches.",
         "targetAbi": "12.1.0.0",

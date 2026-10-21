@@ -121,15 +121,12 @@
       #subLivePanel .sw input::-webkit-color-swatch-wrapper{padding:0}
       #subLivePanel .sw input::-webkit-color-swatch{border:1px solid #ffffff55;border-radius:.3em}
       #subLivePanel .cp{position:relative;display:flex;align-items:center;gap:.5em}
-      #subLivePanel .pk{width:1.9em;height:1.9em;padding:0;border-radius:.4em;border:1px solid #ffffff66;cursor:pointer;background:conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+      #subLivePanel .pk{width:3.4em;height:1.9em;padding:0;border-radius:.4em;border:1px solid #ffffff66;cursor:pointer}
       #subLivePanel .pp{position:absolute;right:0;top:100%;z-index:4;width:14em;box-sizing:border-box;margin-top:.4em;padding:.7em;border-radius:.8em;background:#1c1c20;border:1px solid #ffffff26;box-shadow:0 .5em 1.5em #000a}
       #subLivePanel .pp[hidden]{display:none}
       #subLivePanel .sv{position:relative;height:8em;border-radius:.5em;cursor:crosshair;touch-action:none;background:linear-gradient(to top,#000,#0000),linear-gradient(to right,#fff,#0000),hsl(var(--h,0),100%,50%)}
       #subLivePanel .sv i{position:absolute;left:var(--x,0%);top:var(--y,0%);width:.9em;height:.9em;margin:-.45em 0 0 -.45em;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #000;pointer-events:none}
       #subLivePanel .pp input.hu{width:100%;margin-top:.7em;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
-      #subLivePanel .cp input{width:5.6em;box-sizing:border-box;padding:.5em .5em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#fff;font:inherit;text-transform:lowercase}
-      #subLivePanel .sg{display:grid;grid-template-columns:repeat(4,1.3em);gap:.25em}
-      #subLivePanel .sg button{width:1.3em;height:1.3em;padding:0;border-radius:.3em;border:1px solid #ffffff66;cursor:pointer}
       #subLivePanel .fl{position:absolute;left:0;right:0;top:100%;z-index:3;max-height:11em;overflow:auto;margin-top:.2em;background:#1c1c20;border:1px solid #ffffff26;border-radius:.6em;box-shadow:0 .5em 1.5em #000a}
       #subLivePanel .fl[hidden]{display:none}
       #subLivePanel .fl button{display:block;width:100%;padding:.45em .7em;text-align:left;background:none;border:0;color:#fff;font:inherit;cursor:pointer}
@@ -159,10 +156,9 @@
     const row = (icon, label, desc, control) =>
       `<div class="r"><span class="ic">${icon === 'font' ? '<b>Aa</b>' : svg(P[icon])}</span><div class="t">${label}${desc ? `<small>${desc}</small>` : ''}</div><div class="c">${control}</div></div>`;
     const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
-    // The desktop browser cannot open the system colour dialog: a hex box with preset swatches instead
-    const SWATCHES = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff9900', '#ff0000', '#cccccc', '#000000'];
+    // The desktop browser cannot open the system colour dialog: an in-page picker instead (the hidden input holds the value)
     const color = k => desktop
-      ? `<div class="cp"><input data-k="${k}" type="text" maxlength="7" placeholder="#ffffff" autocomplete="off" spellcheck="false"><button type="button" class="pk" title="Pick a color"></button><div class="sg">${SWATCHES.map(c => `<button type="button" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
+      ? `<div class="cp"><input data-k="${k}" type="hidden"><button type="button" class="pk" title="Pick a color"></button><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
       : `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     // The desktop browser draws no <datalist> popup: it gets its own suggestion list
     const DESK = FONTS.concat(['Leelawadee UI', 'Angsana New', 'Browallia New', 'Cordia New', 'DilleniaUPC', 'Noto Sans Thai', 'Malgun Gothic', 'Yu Gothic', 'Microsoft YaHei', 'Segoe UI Semibold', 'Bahnschrift']);
@@ -221,8 +217,11 @@
       el.style.color = color;
     };
     refreshFont = paintFont;
+    // Colour button shows the current colour (desktop picker)
+    const tint = i => { const b = i.closest('.cp')?.querySelector('.pk'); if (b) b.style.background = hex(i.value, '#ffffff'); };
     const sync = () => panel.querySelectorAll('[data-k]').forEach(i => {
       i.type === 'checkbox' ? (i.checked = !!s[i.dataset.k]) : (i.value = s[i.dataset.k]);
+      if (i.type === 'hidden') tint(i);
       paint(i);
     });
     sync();
@@ -251,6 +250,7 @@
       pp.querySelector('.hu').value = h;
       const i = pp.parentElement.querySelector('input[data-k]');
       i.value = toHex(h, s, v);
+      tint(i);
       i.dispatchEvent(new Event('input', { bubbles: true }));
     };
     panel.addEventListener('pointerdown', e => {
@@ -281,11 +281,6 @@
         }
         return;
       }
-      const b = e.target.closest('[data-c]');
-      if (!b) return;
-      const i = b.closest('.cp').querySelector('input');
-      i.value = b.dataset.c;
-      i.dispatchEvent(new Event('input', { bubbles: true }));
     });
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 

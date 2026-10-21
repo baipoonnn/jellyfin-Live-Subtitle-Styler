@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.6.0
+- Jellyfin Desktop: colour rows now show only the picker button (current colour); the hex box and preset swatches are removed.
+
 ## 1.3.5.0
 - Jellyfin Desktop: added an in-page colour picker (saturation/brightness square and hue slider) beside the hex box and swatches.
 
