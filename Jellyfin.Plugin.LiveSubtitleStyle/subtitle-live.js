@@ -198,7 +198,9 @@
       const n = s.font;
       let text = 'Player default', color = '';
       if (desktop) {
-        text = n ? 'Must be installed on this computer' : 'Player default';
+        const local = n ? avail(n) : null;
+        text = !n ? 'Player default' : local ? 'Installed on this computer' : local === false ? 'Not detected on this computer, the default font may be used' : 'Must be installed on this computer';
+        color = local ? '#6fd08c' : local === false ? '#ff8a8a' : '';
       } else if (n) {
         // A name that was requested from Google Fonts is a web font from then on, even though the browser can now render it
         if (n in web) {
@@ -289,13 +291,17 @@
     }));
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 
+    let addPool = () => {};
     if (desktop) {
       const fi = panel.querySelector('input[data-k=font]'), fl = panel.querySelector('.fl');
+      // Only fonts this computer really has: the candidate names are checked, and the full installed list is added when the browser can give it
+      const pool = new Set(DESK.filter(n => avail(n) !== false));
       const show = () => {
-        const q = DESK.includes(fi.value) ? '' : fi.value.toLowerCase();
-        fl.innerHTML = DESK.filter(n => n.toLowerCase().includes(q)).map(n => `<button type="button" data-f="${n}" style="font-family:'${n}',sans-serif">${n}</button>`).join('');
+        const q = pool.has(fi.value) ? '' : fi.value.toLowerCase();
+        fl.innerHTML = [...pool].filter(n => n.toLowerCase().includes(q)).map(n => `<button type="button" data-f="${n}" style="font-family:'${n}',sans-serif">${n}</button>`).join('');
         fl.hidden = !fl.firstChild;
       };
+      addPool = n => pool.add(n);
       fi.addEventListener('focus', show);
       fi.addEventListener('input', show);
       fi.addEventListener('blur', () => { fl.hidden = true; });
@@ -317,8 +323,10 @@
       scanned = true;
       window.queryLocalFonts().then(list => {
         const list_ = panel.querySelector('#subLiveFonts');
+        const names = [...new Set(list.map(f => f.family))].sort();
+        if (desktop) { names.forEach(n => addPool(n)); return; }
         const have = new Set([...list_.options].map(o => o.value));
-        [...new Set(list.map(f => f.family))].sort().forEach(n => {
+        names.forEach(n => {
           if (have.has(n)) return;
           const o = document.createElement('option');
           o.value = n;

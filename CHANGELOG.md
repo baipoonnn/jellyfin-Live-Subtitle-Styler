@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.8.0
+- Jellyfin Desktop: the font list now shows only fonts installed on the computer (common names are checked, and the full installed list is added when the browser provides it). The status line says whether the typed font was found.
+
 ## 1.3.7.0
 - Keys typed in the style panel (for example G in the font box) no longer reach the player's keyboard shortcuts.
 

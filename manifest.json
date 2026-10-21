@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.8.0",
+        "changelog": "Jellyfin Desktop: the font list now shows only fonts installed on the computer (common names are checked, and the full installed list is added when the browser provides it). The status line says whether the typed font was found.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.8.0.zip",
+        "checksum": "763495cb917205603f3206f058e0d218",
+        "timestamp": "2026-10-21T16:17:28Z"
+      },
+      {
         "version": "1.3.7.0",
         "changelog": "Keys typed in the style panel (for example G in the font box) no longer reach the player's keyboard shortcuts.",
         "targetAbi": "12.1.0.0",
