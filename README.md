@@ -15,18 +15,22 @@
 
 ## About
 
-Adds an **Aa** button next to the gear in the Jellyfin web player. It opens a popup where size, font, colors, outline and position change the subtitle on screen **instantly**, with no playback restart. Choices are remembered in the browser.
+Adds an **Aa** button next to the gear in the player. It opens a popup where size, font, colors, outline and position change the subtitle on screen **instantly**, with no playback restart. Choices are remembered in the browser.
+
+Works in the **web player** and in the **[Jellyfin Desktop](https://github.com/jellyfin/jellyfin-desktop) client** (mpv playback), see [Jellyfin Desktop](#jellyfin-desktop).
 
 ## Install
 
-Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin. Works in the web client and in [Jellyfin Desktop](https://github.com/jellyfin/jellyfin-desktop) (it loads the server's web client).
+Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin. The desktop client loads the server's own web client, so nothing is installed on the computer.
 
 1. **Dashboard > Plugins > Repositories > +**, add:
    ```
-   https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/manifest.json
+   https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/refs/heads/main/manifest.json
    ```
 2. Install **Live Subtitle Style** from the Catalog and restart Jellyfin.
-3. Hard refresh the browser (Ctrl+F5), play a video with a text subtitle, and click **Aa**.
+3. Hard refresh the browser (Ctrl+F5) or restart the desktop client, play a video with a text subtitle, and click **Aa**.
+
+**Updating.** Jellyfin caches the repository list. If a new version is missing from the Catalog, remove and re-add the repository, then reload the Catalog; a Jellyfin restart also clears the cache. The plugin only takes effect after a restart.
 
 ## Settings
 
@@ -47,13 +51,23 @@ Type any font name. Only fonts your browser can really use are suggested. If a f
 
 ## Jellyfin Desktop
 
-The desktop client plays with mpv, which draws subtitles itself. There the Aa panel writes to the client's own subtitle settings (size, font, colors, outline) and to a marked `# subLive` block in **Manual MPV Configuration** (position, background box). Differences from the web player: the font must be installed on the computer (no Google Fonts), outline thickness is rounded to whole steps, and a background above 0 turns on mpv's box style. The first change in a session overwrites the client's subtitle settings; nothing is changed before that.
+The desktop client plays with mpv, which draws subtitles itself, so the page styling used in the browser has no effect there. Instead the Aa panel writes to the client's own subtitle settings (size, font, colors, outline) and to a marked `# subLive` block in **Manual MPV Configuration** (position, background box). Both apply live, and the subtitle follows a slider while you drag it. Your own lines in the manual configuration are left alone, and nothing is changed until the first edit in the panel.
+
+What is different from the web player:
+
+- **Colors.** The desktop browser cannot open the system color dialog, so each color row has a button that opens an in-page picker (saturation/brightness square and a hue slider).
+- **Fonts.** The font must be installed on the computer; Google Fonts are not used. The desktop browser cannot list fonts, so the suggestion list shows the names from a built-in set (the Windows and Office fonts plus common Mac, Linux and Google fonts) that the browser can render. Any other installed font works too: type its exact family name. A name that does not match falls back to the default font.
+- **Outline** thickness is rounded to whole steps, and a background opacity above 0 turns on mpv's box style.
+- **Keys.** Lowercase `g` and `h` are Jellyfin's subtitle-offset shortcuts; keys typed in the panel no longer trigger them.
+- ASS/SSA and image subtitles keep their own styling, as in the web player.
 
 ## Troubleshooting
 
 - **Installed fonts are missing, or the status is red.** The browser is hiding them. In Brave set Shields > Advanced View > **Block fingerprinting** to Disabled for the site; in Firefox turn off `privacy.resistFingerprinting`. Google Fonts work either way.
 - **Subtitle does not change.** It must be an SRT or WebVTT track.
 - **No Aa button.** Hard refresh, and check the plugin is Active and File Transformation is installed.
+- **Desktop client shows "Browser not supported".** That page comes from another script on your server (for example a JavaScript Injector entry), not from this plugin.
+- **Desktop font not applied.** The name must match an installed font family exactly.
 - **Switch it off in one browser.** `localStorage.subLiveOff = '1'`, then refresh.
 
 ## Build
