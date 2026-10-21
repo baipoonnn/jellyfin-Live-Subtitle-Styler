@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.3.0
+- Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; Thai fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.
+
 ## 1.1.2.0
 - The font suggestions now list only fonts this browser can actually use (installed system fonts, plus the Google web fonts), so a font that cannot be rendered is no longer offered.
 

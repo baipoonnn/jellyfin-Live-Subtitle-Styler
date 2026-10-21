@@ -41,6 +41,7 @@
       css.textContent = `
         .videoSubtitlesInner{font-size:${s.size}em!important;color:${s.color}!important;background:${bg}!important;text-shadow:${sh}!important;${ff ? ff + '!important' : ''}}
         .videoSubtitles{bottom:${s.pos}%!important}
+        .videoSubtitlesInner{margin-bottom:0!important}
         .htmlvideoplayer::cue{color:${s.color};background-color:${bg};text-shadow:${sh};${ff}}`;
     };
     apply();
@@ -109,7 +110,7 @@
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
-      + row('pos', 'Position', 'Move subtitles up or down', range('pos', 'min=0 max=40 step=1'))
+      + row('pos', 'Position', 'Move subtitles up or down (below 0 goes lower than the edge)', range('pos', 'min=-10 max=40 step=.5'))
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 
