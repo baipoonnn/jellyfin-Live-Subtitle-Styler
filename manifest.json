@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.1.4.0",
+        "changelog": "Added an Outline thickness slider (0.5 to 6 px) under the Outline toggle; it is inactive while Outline is off. The Size limit was raised from 300% to 500%.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.4.0.zip",
+        "checksum": "60e9a8b32ee92601158f453b73b320a3",
+        "timestamp": "2026-10-21T12:36:56Z"
+      },
+      {
         "version": "1.1.3.0",
         "changelog": "Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; Thai fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.",
         "targetAbi": "12.1.0.0",

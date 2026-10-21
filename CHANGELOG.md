@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.4.0
+- Added an Outline thickness slider (0.5 to 6 px) under the Outline toggle; it is inactive while Outline is off. The Size limit was raised from 300% to 500%.
+
 ## 1.1.3.0
 - Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; Thai fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.
 

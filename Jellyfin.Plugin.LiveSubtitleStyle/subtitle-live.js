@@ -2,7 +2,7 @@
 // Adds an "Aa" button to the player OSD next to the gear. One <style> driven by values: changes repaint instantly.
 (() => {
   const init = () => {
-    const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, pos: 8, font: '' };
+    const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, edgeW: 1.5, pos: 8, font: '' };
     const ACC = 'var(--theme-primary-color,#e50914)';
     // Suggestions, filtered to the fonts this browser can really use (see avail); any installed font can still be typed in
     const FONTS = ['Angsana New', 'AngsanaUPC', 'DilleniaUPC', 'Cordia New', 'Browallia New', 'TH Sarabun New', 'Leelawadee UI', 'Tahoma', 'Arial', 'Verdana', 'Segoe UI', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
@@ -36,7 +36,9 @@
       const bg = s.bgColor + Math.round(s.bg * 255).toString(16).padStart(2, '0');
       loadWeb(s.font);
       const ff = s.font ? `font-family:"${s.font.replace(/["\\;{}]/g, '')}", sans-serif` : '';
-      const sh = s.edge ? '0 0 4px #000,1px 1px 2px #000,-1px -1px 2px #000' : 'none';
+      const e = s.edgeW;
+      const ring = Array.from({ length: 16 }, (_, k) => [Math.cos(k * Math.PI / 8) * e, Math.sin(k * Math.PI / 8) * e].map(v => v.toFixed(2) + 'px').join(' ') + ' 0 #000');
+      const sh = s.edge ? ring.join(',') + `,0 0 ${e * 2}px #000` : 'none';
       // !important beats the inline styles Jellyfin sets on the subtitle element
       css.textContent = `
         .videoSubtitlesInner{font-size:${s.size}em!important;color:${s.color}!important;background:${bg}!important;text-shadow:${sh}!important;${ff ? ff + '!important' : ''}}
@@ -89,6 +91,7 @@
       alpha: 'M17.66 8L12 2.35 6.34 8C4.78 9.56 4 11.64 4 13.64s.78 4.11 2.34 5.67 3.61 2.35 5.66 2.35 4.1-.79 5.66-2.35S20 15.64 20 13.64 19.22 9.56 17.66 8zM6 14c.01-2 .62-3.27 1.76-4.4L12 5.27l4.24 4.38C17.38 10.77 17.99 12 18 14H6z',
       edge: 'M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z',
       pos: 'M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z',
+      weight: 'M3 17h18v-2H3v2zm0 3h18v-1H3v1zm0-7h18v-3H3v3zm0-9v4h18V4H3z',
       reset: 'M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z',
       chev: 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z',
     };
@@ -104,13 +107,14 @@
     panel.id = 'subLivePanel';
     panel.hidden = true;
     panel.innerHTML = '<div class="h"><div class="bd">Aa</div><div><h3>Subtitle style</h3><p>Customize the appearance of subtitles</p></div></div>'
-      + row('size', 'Size', '', range('size', 'min=.5 max=3 step=.05'))
+      + row('size', 'Size', '', range('size', 'min=.5 max=5 step=.05'))
       + row('font', 'Font', '<span data-fs></span>', fontControl)
       + row('drop', 'Text color', '', color('color'))
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
-      + row('pos', 'Position', 'Move subtitles up or down (below 0 goes lower than the edge)', range('pos', 'min=-10 max=40 step=.5'))
+      + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.5 max=6 step=.5'))
+      + row('pos', 'Position', 'Move up or down (below 0 = lower)', range('pos', 'min=-10 max=40 step=.5'))
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 
@@ -119,7 +123,13 @@
       if (i.type !== 'range') return;
       i.style.setProperty('--p', (i.value - i.min) / (i.max - i.min) * 100 + '%');
       const o = panel.querySelector(`[data-o="${i.dataset.k}"]`);
-      if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.value;
+      if (o) o.textContent = i.dataset.k === 'size' || i.dataset.k === 'bg' ? Math.round(i.value * 100) : i.dataset.k === 'edgeW' ? i.value + 'px' : i.value;
+    };
+    // The thickness slider is inert while Outline is off
+    const edgeUi = () => {
+      const w = panel.querySelector('[data-k=edgeW]');
+      w.disabled = !s.edge;
+      w.closest('.r').style.opacity = s.edge ? '' : '.45';
     };
     // Say whether the chosen font can actually be used in this browser
     const paintFont = () => {
@@ -134,15 +144,17 @@
     });
     sync();
     paintFont();
+    edgeUi();
     panel.addEventListener('input', e => {
       const i = e.target, k = i.dataset.k;
       if (!k) return;
       s[k] = i.type === 'checkbox' ? +i.checked : i.type === 'range' ? +i.value : i.value;
       paint(i);
       if (k === 'font') paintFont();
+      if (k === 'edge') edgeUi();
       apply();
     });
-    panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); apply(); };
+    panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 
     // Chrome can list the fonts really installed on this device (asks permission once): fills the suggestions with exact names
     let scanned = false;

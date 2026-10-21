@@ -4,7 +4,7 @@ Adds a **subtitle style** button (an "Aa" icon) next to the gear in the Jellyfin
 
 ## Features
 
-- **Size**, **text color**, **background opacity**, **background color**, **outline** and **position**, all applied instantly.
+- **Size** (50% to 500%), **text color**, **background opacity**, **background color**, **outline**, **outline thickness** (0.5 to 6 px) and **position**, all applied instantly.
 - **Position** goes below 0 (down to -10), so subtitles can sit lower than the bottom edge. Useful for Thai fonts, which have tall line boxes.
 - **Font** field with a list of suggestions:
   - Only fonts your browser can really use are listed (installed system fonts), so a font that cannot be rendered is not offered.
