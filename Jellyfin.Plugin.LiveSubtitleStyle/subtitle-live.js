@@ -54,12 +54,14 @@
 
     // Jellyfin Desktop plays through mpv, which draws the subtitles itself, so the DOM rules below do nothing there.
     // Its settings bridge applies live: map the style onto the subtitles section and the manual mpv config (position, box)
-    let pushT, ready = false;
+    let pushT = 0, ready = false;
     const push = () => {
       const j = window.jmpInfo?.settings;
       if (!j?.subtitles || !j.other || !window.api?.settings) return;
-      clearTimeout(pushT);
+      // Throttle, not debounce: a debounce never fires while a slider is being dragged
+      if (pushT) return;
       pushT = setTimeout(() => {
+        pushT = 0;
         const v = {
           size: Math.round(32 * s.size), font: s.font || 'sans-serif', color: s.color,
           border_color: '#000000', border_size: s.edge ? Math.round(s.edgeW * 2) : 0,
@@ -71,7 +73,7 @@
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
         if (j.other.other_conf !== next) j.other.other_conf = next;
-      }, 150);
+      }, 80);
     };
 
     // Subtitle styling: rewritten on every change

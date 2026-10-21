@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.3.0
+- Jellyfin Desktop: subtitle changes now apply while a slider is being dragged, not only after the mouse is released.
+
 ## 1.3.2.0
 - Jellyfin Desktop: the colour pickers now use a hex box with preset swatches, because the desktop browser cannot open the system colour dialog.
 
