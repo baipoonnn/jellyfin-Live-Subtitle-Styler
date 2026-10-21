@@ -23,7 +23,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Settings](#settings)
-- [Fonts and Thai subtitles](#fonts-and-thai-subtitles)
+- [Fonts](#fonts)
 - [Troubleshooting](#troubleshooting)
 - [Compatibility](#compatibility)
 - [Building from source](#building-from-source)
@@ -38,7 +38,7 @@ Jellyfin's own subtitle appearance settings live on a separate page, so tuning t
 ## Features
 
 - **Live updates.** Size, font, colors, outline and position change the moment you move a control.
-- **Thai-friendly.** A **Position** control that goes below the edge of the screen, an outline you can thicken, a font box that lists only fonts your browser can use, and Thai web fonts that work on any device.
+- **Fine control.** A **Position** control that goes below the edge of the screen, an adjustable outline thickness, sizes up to 500%, and a font box that lists only fonts your browser can use, plus web fonts that work on any device.
 - **Looks native.** The button is a clone of the player's gear button, so your theme styles it. The popup follows your theme's accent color.
 - **Light.** One small script, one stylesheet rewrite per change, nothing running while you watch.
 - **Safe.** Anything that goes wrong stays inside the script, and a one-line switch turns it off in a browser.
@@ -84,7 +84,7 @@ Every released version, with its notes, is listed under **Revision History** on 
 
 | Setting | Range | Default | Notes |
 | --- | --- | --- | --- |
-| Size | 50% to 500% | 100% | Thai fonts render small; try 150% or more |
+| Size | 50% to 500% | 100% | Some fonts render small; raise it if the text looks tiny |
 | Font | any usable font | player default | A status line says whether the font can be used |
 | Text color | any | white | |
 | Background | 0 to 100 | 0 | Opacity of the box behind the text |
@@ -93,7 +93,7 @@ Every released version, with its notes, is listed under **Revision History** on 
 | Outline thickness | 0.5 to 6 px | 1.5 px | Inactive while Outline is off |
 | Position | -10 to 40 | 8 | Percent of the screen height from the bottom. Below 0 goes lower than the edge |
 
-## Fonts and Thai subtitles
+## Fonts
 
 The **Font** box is a type-in field with suggestions.
 
@@ -104,13 +104,13 @@ The **Font** box is a type-in field with suggestions.
   | Style | Fonts |
   | --- | --- |
   | Sans-serif | Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai |
-  | Serif (closest free look to Angsana New and Dillenia) | Noto Serif Thai, Trirong, Taviraj, Pridi |
+  | Serif | Noto Serif Thai, Trirong, Taviraj, Pridi |
 
 - **Status line.** Under the font name it shows green *Installed on this device*, *Web font from Google Fonts*, or red *Not available in this browser*.
 
 ## Troubleshooting
 
-**Windows fonts such as Angsana New or DilleniaUPC are missing, or the status is red.**
+**Installed fonts are missing from the list, or the status line is red.**
 The browser is hiding installed fonts.
 
 - **Brave:** click the lion icon on the Jellyfin page, open *Advanced View*, and set **Block fingerprinting** to *Disabled* (or *Standard*) for that site.
