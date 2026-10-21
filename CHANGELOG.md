@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.7.0
+- Keys typed in the style panel (for example G in the font box) no longer reach the player's keyboard shortcuts.
+
 ## 1.3.6.0
 - Jellyfin Desktop: colour rows now show only the picker button (current colour); the hex box and preset swatches are removed.
 

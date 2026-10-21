@@ -1,7 +1,7 @@
 ---
 name: "Live Subtitle Style"
 guid: "5b0c3a8e-7d1f-4c62-9a44-3e2f6b1d8c07"
-version: "1.3.6.0"
+version: "1.3.7.0"
 targetAbi: "12.1.0.0"
 framework: "net10.0"
 overview: "Live subtitle styling in the Jellyfin web player and desktop client"
@@ -14,6 +14,7 @@ owner: "local"
 artifacts:
 - "Jellyfin.Plugin.LiveSubtitleStyle.dll"
 changelog: >
+  1.3.7.0: panel keys no longer trigger player shortcuts.
   1.3.6.0: desktop colour picker only.
   1.3.5.0: desktop colour picker.
   1.3.4.0: desktop font suggestion list.

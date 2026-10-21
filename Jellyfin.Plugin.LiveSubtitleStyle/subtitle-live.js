@@ -282,6 +282,11 @@
         return;
       }
     });
+    // Keys typed in the panel must not reach the player's shortcuts (for example G and H move the subtitle offset)
+    ['keydown', 'keyup', 'keypress'].forEach(ev => panel.addEventListener(ev, e => {
+      if (ev === 'keydown' && e.key === 'Escape') panel.hidden = true;
+      e.stopPropagation();
+    }));
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 
     if (desktop) {
