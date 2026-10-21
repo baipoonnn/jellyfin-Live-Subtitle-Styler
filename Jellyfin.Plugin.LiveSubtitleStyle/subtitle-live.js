@@ -5,25 +5,37 @@
     const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, edgeW: 1.5, pos: 8, font: '' };
     const ACC = 'var(--theme-primary-color,#e50914)';
     // Suggestions, filtered to the fonts this browser can really use (see avail); any installed font can still be typed in
-    const FONTS = ['Angsana New', 'AngsanaUPC', 'DilleniaUPC', 'Cordia New', 'Browallia New', 'TH Sarabun New', 'Leelawadee UI', 'Tahoma', 'Arial', 'Verdana', 'Segoe UI', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
-    // Google Fonts with Thai glyphs, fetched only when one is selected (works on any device); the serif ones resemble Angsana and Dillenia
-    const WEB = ['Sarabun', 'Mitr', 'Prompt', 'Kanit', 'Noto Sans Thai', 'Noto Serif Thai', 'Trirong', 'Taviraj', 'Pridi'];
-    const loaded = new Set();
-    const loadWeb = name => {
-      if (!WEB.includes(name) || loaded.has(name)) return;
-      loaded.add(name);
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@400;700&display=swap`;
-      document.head.append(link);
-    };
-    // True when this browser can really render the font: Thai + Latin text measures differently from every fallback
+    const FONTS = ['Arial', 'Helvetica', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Segoe UI', 'Calibri', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
+    // Google Fonts offered as one-click web fonts; any other family name that is not installed is looked up there too
+    const WEB = ['Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Inter', 'Noto Sans', 'Noto Serif', 'Merriweather', 'Oswald'];
+    // Sample text in several scripts, so a font is detected whichever script it covers
+    const PROBES = ['mwiQ0Oil', 'Яжфыя', 'αβγδε', 'مرحبا', 'שלום', 'नमस्ते', 'สวัสดี', '你好世界', 'こんにちは', '안녕하세요'];
+    const family = n => /^[A-Za-z0-9][A-Za-z0-9 ]{0,40}$/.test(n);
+    // True when this browser can really render the font: its text measures differently from every fallback for at least one script
     const avail = n => {
       try {
         const c = document.createElement('canvas').getContext('2d');
-        const w = f => { c.font = '40px ' + f; return c.measureText('mwiสวัสดีกขคง').width; };
-        return ['monospace', 'serif', 'sans-serif'].some(b => w(`"${n}",${b}`) !== w(b));
+        const w = (f, text) => { c.font = '40px ' + f; return c.measureText(text).width; };
+        return PROBES.some(p => ['monospace', 'serif', 'sans-serif'].some(b => w(`"${n}",${b}`, p) !== w(b, p)));
       } catch { return null; }
+    };
+    const web = {}; // family -> true / false once Google Fonts has answered, null while waiting
+    let refreshFont = () => {};
+    const loadWeb = name => {
+      if (!family(name) || name in web) return;
+      web[name] = null;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@400;700&display=swap`;
+      link.onload = () => document.fonts.load(`16px "${name}"`).then(f => { web[name] = f.length > 0; refreshFont(); }, () => { web[name] = false; refreshFont(); });
+      link.onerror = () => { web[name] = false; refreshFont(); };
+      document.head.append(link);
+    };
+    // Typing fires many input events: look a name up only after a pause, and never for a font that is installed
+    let lookup;
+    const wantWeb = () => {
+      clearTimeout(lookup);
+      if (s.font && avail(s.font) !== true) lookup = setTimeout(() => loadWeb(s.font), 600);
     };
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
@@ -34,7 +46,7 @@
     const apply = () => {
       try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
       const bg = s.bgColor + Math.round(s.bg * 255).toString(16).padStart(2, '0');
-      loadWeb(s.font);
+      wantWeb();
       const ff = s.font ? `font-family:"${s.font.replace(/["\\;{}]/g, '')}", sans-serif` : '';
       const e = s.edgeW;
       const ring = Array.from({ length: 16 }, (_, k) => [Math.cos(k * Math.PI / 8) * e, Math.sin(k * Math.PI / 8) * e].map(v => v.toFixed(2) + 'px').join(' ') + ' 0 #000');
@@ -129,10 +141,25 @@
     // Say whether the chosen font can actually be used in this browser
     const paintFont = () => {
       const el = panel.querySelector('[data-fs]');
-      const n = s.font, ok = n && !WEB.includes(n) ? avail(n) : null;
-      el.textContent = !n ? 'Player default' : WEB.includes(n) ? 'Web font from Google Fonts' : ok === null ? '' : ok ? 'Installed on this device' : 'Not available in this browser, default font used';
-      el.style.color = !n || WEB.includes(n) || ok === null ? '' : ok ? '#6fd08c' : '#ff8a8a';
+      const n = s.font;
+      let text = 'Player default', color = '';
+      if (n) {
+        // A name that was requested from Google Fonts is a web font from then on, even though the browser can now render it
+        if (n in web) {
+          if (web[n] === true) text = 'Web font from Google Fonts';
+          else if (web[n] === false) { text = 'Not found on this device or Google Fonts'; color = '#ff8a8a'; }
+          else text = 'Looking up on Google Fonts…';
+        } else {
+          const local = avail(n);
+          if (local) { text = 'Installed on this device'; color = '#6fd08c'; }
+          else if (!family(n)) { text = 'Not found on this device or Google Fonts'; color = '#ff8a8a'; }
+          else text = local === null ? '' : 'Looking up on Google Fonts…';
+        }
+      }
+      el.textContent = text;
+      el.style.color = color;
     };
+    refreshFont = paintFont;
     const sync = () => panel.querySelectorAll('[data-k]').forEach(i => {
       i.type === 'checkbox' ? (i.checked = !!s[i.dataset.k]) : (i.value = s[i.dataset.k]);
       paint(i);

@@ -38,7 +38,7 @@ Jellyfin's own subtitle appearance settings live on a separate page, so tuning t
 ## Features
 
 - **Live updates.** Size, font, colors, outline and position change the moment you move a control.
-- **Fine control.** A **Position** control that goes below the edge of the screen, an adjustable outline thickness, sizes up to 500%, and a font box that lists only fonts your browser can use, plus web fonts that work on any device.
+- **Fine control.** A **Position** control that goes below the edge of the screen, an adjustable outline thickness, sizes up to 500%, and a font box that lists only fonts your browser can use, plus web fonts from Google Fonts that work on any device.
 - **Looks native.** The button is a clone of the player's gear button, so your theme styles it. The popup follows your theme's accent color.
 - **Light.** One small script, one stylesheet rewrite per change, nothing running while you watch.
 - **Safe.** Anything that goes wrong stays inside the script, and a one-line switch turns it off in a browser.
@@ -85,7 +85,7 @@ Every released version, with its notes, is listed under **Revision History** on 
 | Setting | Range | Default | Notes |
 | --- | --- | --- | --- |
 | Size | 50% to 500% | 100% | Some fonts render small; raise it if the text looks tiny |
-| Font | any usable font | player default | A status line says whether the font can be used |
+| Font | any installed font or Google Fonts family | player default | A status line says where the font comes from |
 | Text color | any | white | |
 | Background | 0 to 100 | 0 | Opacity of the box behind the text |
 | Background color | any | black | |
@@ -97,16 +97,22 @@ Every released version, with its notes, is listed under **Revision History** on 
 
 The **Font** box is a type-in field with suggestions.
 
-- **System fonts.** Only fonts your browser can really use are suggested, so a font that cannot be shown is never offered. You can still type any font name.
+- **System fonts.** Only fonts your browser can really use are suggested, so a font that cannot be shown is never offered. You can still type any font name. The check works for any script (it measures sample text in ten scripts).
 - **Installed font list.** Chrome-based browsers can list every installed font after a one-time permission prompt ("Look up fonts on this device"). The exact names are then added to the suggestions.
-- **Web fonts.** These work on any device and are fetched from Google Fonts only when you pick one:
+- **Web fonts.** If a font is not installed, it is looked up on [Google Fonts](https://fonts.google.com) and loaded from there, so it works on any device. A few popular families are suggested with one click:
 
   | Style | Fonts |
   | --- | --- |
-  | Sans-serif | Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai |
-  | Serif | Noto Serif Thai, Trirong, Taviraj, Pridi |
+  | Sans-serif | Roboto, Open Sans, Lato, Montserrat, Poppins, Inter, Noto Sans |
+  | Serif | Noto Serif, Merriweather |
+  | Display | Oswald |
 
-- **Status line.** Under the font name it shows green *Installed on this device*, *Web font from Google Fonts*, or red *Not available in this browser*.
+  Any other Google Fonts family works too: type its name exactly as it appears on Google Fonts, for example `Noto Sans JP` or `Sarabun`.
+- **Status line.** Under the font name it shows green *Installed on this device*, *Web font from Google Fonts*, or red *Not found on this device or Google Fonts*.
+
+### Privacy
+
+A name typed in the Font box that is not installed (letters, digits and spaces only, after a short pause) is requested from `fonts.googleapis.com`, and the font files come from `fonts.gstatic.com`. Installed fonts and the other settings never leave your browser.
 
 ## Troubleshooting
 
@@ -116,7 +122,7 @@ The browser is hiding installed fonts.
 - **Brave:** click the lion icon on the Jellyfin page, open *Advanced View*, and set **Block fingerprinting** to *Disabled* (or *Standard*) for that site.
 - **Firefox:** turn off `privacy.resistFingerprinting`.
 - The font must also be installed on the device you watch from. Phones and TVs usually lack Windows fonts.
-- The web fonts above work in every browser.
+- Web fonts from Google Fonts work in every browser, so type or pick one of those instead.
 
 **The subtitle does not change.**
 It must be a text subtitle (SRT or WebVTT). ASS/SSA and PGS tracks carry their own styling and are not restyled.

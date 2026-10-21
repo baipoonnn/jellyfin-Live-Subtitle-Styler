@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.2.0.0",
+        "changelog": "Made the font handling language-neutral. The suggestions are now common system fonts plus general Google web fonts. Any font name you type that is not installed is looked up on Google Fonts after a short pause (letters, digits and spaces only). The installed-font check uses sample text from ten scripts, and a font loaded from Google Fonts is reported as a web font instead of 'Installed on this device'.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.2.0.0.zip",
+        "checksum": "fda7c93e061bd538f2918c54387f0730",
+        "timestamp": "2026-10-21T13:07:49Z"
+      },
+      {
         "version": "1.1.7.0",
         "changelog": "Fixed two Aa buttons appearing. The WebGPU Player inserts its tune button next to the gear after this button is added, so the check 'is my button right before the gear' failed and a second button was added. The check now looks at the whole button row.",
         "targetAbi": "12.1.0.0",
@@ -42,7 +50,7 @@
       },
       {
         "version": "1.1.3.0",
-        "changelog": "Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; Thai fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.",
+        "changelog": "Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; some fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.",
         "targetAbi": "12.1.0.0",
         "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.3.0.zip",
         "checksum": "cd451175f67ebe8c81ace4370965b601",
@@ -66,7 +74,7 @@
       },
       {
         "version": "1.1.0.0",
-        "changelog": "Redesigned subtitle style popup: header, icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once), and Thai serif web fonts close to Angsana and Dillenia were added (Noto Serif Thai, Trirong, Taviraj, Pridi).",
+        "changelog": "Redesigned subtitle style popup: icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once) and offers more web fonts.",
         "targetAbi": "12.1.0.0",
         "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.0.0.zip",
         "checksum": "17a82808cb1203ecde32bca1db6ae6ab",
@@ -74,7 +82,7 @@
       },
       {
         "version": "1.0.9.0",
-        "changelog": "Added Google Fonts with Thai support (Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai), listed as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices without the Windows Thai fonts.",
+        "changelog": "Added Google Fonts as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices that do not have the font installed.",
         "targetAbi": "12.1.0.0",
         "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.9.0.zip",
         "checksum": "18646004a4d96b2b94989b17600066d3",
@@ -82,7 +90,7 @@
       },
       {
         "version": "1.0.8.0",
-        "changelog": "The font control is a type-in field with suggestions, so any font installed on the viewing device works. Thai fonts (Angsana New, AngsanaUPC, DilleniaUPC, Cordia New, Browallia New, TH Sarabun New, Leelawadee UI) come first.",
+        "changelog": "The font control is a type-in field with suggestions, so any font installed on the viewing device works.",
         "targetAbi": "12.1.0.0",
         "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.8.0.zip",
         "checksum": "2b59aef10055d760a2fab37f1005ad0d",

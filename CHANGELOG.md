@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0.0
+- Made the font handling language-neutral. The suggestions are now common system fonts plus general Google web fonts. Any font name you type that is not installed is looked up on Google Fonts after a short pause (letters, digits and spaces only). The installed-font check uses sample text from ten scripts, and a font loaded from Google Fonts is reported as a web font instead of 'Installed on this device'.
+
 ## 1.1.7.0
 - Fixed two Aa buttons appearing. The WebGPU Player inserts its tune button next to the gear after this button is added, so the check 'is my button right before the gear' failed and a second button was added. The check now looks at the whole button row.
 
@@ -13,7 +16,7 @@
 - Added an Outline thickness slider (0.5 to 6 px) under the Outline toggle; it is inactive while Outline is off. The Size limit was raised from 300% to 500%.
 
 ## 1.1.3.0
-- Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; Thai fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.
+- Position can now go below 0 (down to -10) so subtitles can sit lower than the bottom edge; some fonts have tall line boxes and stayed high at 0. The stock margin under the subtitle is reset so this slider is the only vertical control.
 
 ## 1.1.2.0
 - The font suggestions now list only fonts this browser can actually use (installed system fonts, plus the Google web fonts), so a font that cannot be rendered is no longer offered.
@@ -22,13 +25,13 @@
 - The Font row now says whether the chosen font can be used in the browser you are watching in: green 'Installed on this device', red 'Not available in this browser, default font used', or 'Web font from Google Fonts'. Browsers with font-fingerprint protection (for example Brave Shields, Firefox with resistFingerprinting) hide installed fonts, in which case use a web font.
 
 ## 1.1.0.0
-- Redesigned subtitle style popup: header, icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once), and Thai serif web fonts close to Angsana and Dillenia were added (Noto Serif Thai, Trirong, Taviraj, Pridi).
+- Redesigned subtitle style popup: icon tiles, red sliders with value boxes, toggle switch, font dropdown, colour swatches and a Reset button. The OSD button is now an 'Aa' glyph. The font box can list the fonts actually installed on the device (Chrome asks permission once) and offers more web fonts.
 
 ## 1.0.9.0
-- Added Google Fonts with Thai support (Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai), listed as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices without the Windows Thai fonts.
+- Added Google Fonts as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices that do not have the font installed.
 
 ## 1.0.8.0
-- The font control is now a type-in field with suggestions, so any font installed on the viewing device can be used. Thai fonts (Angsana New, AngsanaUPC, DilleniaUPC, Cordia New, Browallia New, TH Sarabun New, Leelawadee UI) are listed first.
+- The font control is a type-in field with suggestions, so any font installed on the viewing device works.
 
 ## 1.0.7.0
 - The full version history now appears in Dashboard > Plugins.
