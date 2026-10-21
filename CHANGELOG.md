@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0.0
+- Jellyfin Desktop support: in the desktop client (mpv playback) the Aa panel now restyles subtitles live through the client's own subtitle settings and manual mpv config (size, font, colors, background box, outline, position).
+
 ## 1.2.1.0
 - Security hardening: values read back from browser storage are now clamped and validated before they reach the stylesheet. Added an opt-out for all Google Fonts requests (localStorage.subLiveNoWeb = '1'). README shortened and a security and privacy section added.
 

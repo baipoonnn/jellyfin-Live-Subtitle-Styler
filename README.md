@@ -2,7 +2,7 @@
 
 # Jellyfin Live Subtitle Styler
 
-**Style subtitles in the Jellyfin web player while the video keeps playing.**
+**Style subtitles in the Jellyfin web player and desktop client while the video keeps playing.**
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbaipoonnn%2Fjellyfin-Live-Subtitle-Styler%2Fmain%2Fmanifest.json&query=%24%5B0%5D.versions%5B0%5D.version&label=version&color=e50914)](CHANGELOG.md)
 [![Jellyfin](https://img.shields.io/badge/Jellyfin-12.1%2B-00a4dc)](https://jellyfin.org)
@@ -19,7 +19,7 @@ Adds an **Aa** button next to the gear in the Jellyfin web player. It opens a po
 
 ## Install
 
-Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin. Works in the web client only.
+Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin. Works in the web client and in [Jellyfin Desktop](https://github.com/jellyfin/jellyfin-desktop) (it loads the server's web client).
 
 1. **Dashboard > Plugins > Repositories > +**, add:
    ```
@@ -44,6 +44,10 @@ Only text subtitles (SRT, WebVTT) are restyled. ASS/SSA and PGS keep their own s
 ## Fonts
 
 Type any font name. Only fonts your browser can really use are suggested. If a font is not installed, it is looked up on [Google Fonts](https://fonts.google.com) (a few popular ones are suggested), so it works on any device. A status line under the font says which case applies.
+
+## Jellyfin Desktop
+
+The desktop client plays with mpv, which draws subtitles itself. There the Aa panel writes to the client's own subtitle settings (size, font, colors, outline) and to a marked `# subLive` block in **Manual MPV Configuration** (position, background box). Differences from the web player: the font must be installed on the computer (no Google Fonts), outline thickness is rounded to whole steps, and a background above 0 turns on mpv's box style. The first change in a session overwrites the client's subtitle settings; nothing is changed before that.
 
 ## Troubleshooting
 

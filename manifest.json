@@ -3,11 +3,19 @@
     "guid": "5b0c3a8e-7d1f-4c62-9a44-3e2f6b1d8c07",
     "name": "Live Subtitle Style",
     "description": "Adds a subtitle style button to the Jellyfin web player OSD. Size, font, color, background, outline and position change live, with no playback restart. Requires the File Transformation plugin.",
-    "overview": "Live subtitle styling in the web player",
+    "overview": "Live subtitle styling in the web player and desktop client",
     "owner": "baipoonnn",
     "category": "General",
     "imageUrl": "",
     "versions": [
+      {
+        "version": "1.3.0.0",
+        "changelog": "Jellyfin Desktop support: in the desktop client (mpv playback) the Aa panel now restyles subtitles live through the client's own subtitle settings and manual mpv config (size, font, colors, background box, outline, position).",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.0.0.zip",
+        "checksum": "789b739904f081cb26d77b20dfeda313",
+        "timestamp": "2026-10-21T15:05:38Z"
+      },
       {
         "version": "1.2.1.0",
         "changelog": "Security hardening: values read back from browser storage are now clamped and validated before they reach the stylesheet. Added an opt-out for all Google Fonts requests (localStorage.subLiveNoWeb = '1'). README shortened and a security and privacy section added.",

@@ -50,6 +50,28 @@
       font: typeof s.font === 'string' && s.font.length <= 60 ? s.font : '',
     };
 
+    // Jellyfin Desktop plays through mpv, which draws the subtitles itself, so the DOM rules below do nothing there.
+    // Its settings bridge applies live: map the style onto the subtitles section and the manual mpv config (position, box)
+    let pushT, ready = false;
+    const push = () => {
+      const j = window.jmpInfo?.settings;
+      if (!j?.subtitles || !j.other || !window.api?.settings) return;
+      clearTimeout(pushT);
+      pushT = setTimeout(() => {
+        const v = {
+          size: Math.round(32 * s.size), font: s.font || 'sans-serif', color: s.color,
+          border_color: '#000000', border_size: s.edge ? Math.round(s.edgeW * 2) : 0,
+          background_color: s.bgColor, background_transparency: Math.round(s.bg * 255).toString(16).padStart(2, '0'),
+        };
+        for (const k in v) if (j.subtitles[k] !== v[k]) j.subtitles[k] = v[k];
+        // The settings list has no free position or box style, so own a marked block of the manual mpv config
+        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, '# /subLive'].join('\n');
+        const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
+        const next = (text ? text + '\n' : '') + conf;
+        if (j.other.other_conf !== next) j.other.other_conf = next;
+      }, 150);
+    };
+
     // Subtitle styling: rewritten on every change
     const css = document.createElement('style');
     document.head.append(css);
@@ -67,8 +89,10 @@
         .videoSubtitles{bottom:${s.pos}%!important}
         .videoSubtitlesInner{margin-bottom:0!important}
         .htmlvideoplayer::cue{color:${s.color};background-color:${bg};text-shadow:${sh};${ff}}`;
+      if (ready) push();
     };
     apply();
+    ready = true; // the desktop client keeps its own settings until the first change here
 
     // Popup styling: static
     const ui = document.createElement('style');
