@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.9.0
+- A key that something else cancels before the font box gets it (G, for example) is now typed anyway. Desktop: about 190 common font names are checked, and a typed font that is installed is added to the list.
+
 ## 1.3.8.0
 - Jellyfin Desktop: the font list now shows only fonts installed on the computer (common names are checked, and the full installed list is added when the browser provides it). The status line says whether the typed font was found.
 

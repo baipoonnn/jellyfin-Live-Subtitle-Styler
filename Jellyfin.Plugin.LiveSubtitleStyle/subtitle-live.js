@@ -161,7 +161,8 @@
       ? `<div class="cp"><input data-k="${k}" type="hidden"><button type="button" class="pk" title="Pick a color"></button><div class="pp" hidden><div class="sv"><i></i></div><input class="hu" type="range" min="0" max="360" step="1"></div></div>`
       : `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     // The desktop browser draws no <datalist> popup: it gets its own suggestion list
-    const DESK = FONTS.concat(['Leelawadee UI', 'Angsana New', 'Browallia New', 'Cordia New', 'DilleniaUPC', 'Noto Sans Thai', 'Malgun Gothic', 'Yu Gothic', 'Microsoft YaHei', 'Segoe UI Semibold', 'Bahnschrift']);
+    const MORE = ['Arial Black', 'Arial Narrow', 'Bahnschrift', 'Cambria', 'Candara', 'Constantia', 'Corbel', 'Ebrima', 'Franklin Gothic Medium', 'Gabriola', 'Gadugi', 'Ink Free', 'Javanese Text', 'Lucida Console', 'Lucida Sans Unicode', 'Microsoft JhengHei', 'MS Gothic', 'MV Boli', 'Myanmar Text', 'Nirmala UI', 'Palatino Linotype', 'Segoe Print', 'Segoe Script', 'Segoe UI Emoji', 'Segoe UI Symbol', 'SimSun', 'Sitka Text', 'Sylfaen', 'Yu Mincho', 'AngsanaUPC', 'Browallia New', 'BrowalliaUPC', 'Cordia New', 'CordiaUPC', 'EucrosiaUPC', 'FreesiaUPC', 'IrisUPC', 'JasmineUPC', 'KodchiasanUPC', 'LilyUPC', 'Book Antiqua', 'Bookman Old Style', 'Century Gothic', 'Century', 'Garamond', 'Rockwell', 'Gill Sans MT', 'Franklin Gothic Book', 'Perpetua', 'Tw Cen MT', 'Helvetica Neue', 'Arial Unicode MS', 'Menlo', 'Monaco', 'Optima', 'Futura', 'Avenir', 'Lucida Grande', 'DejaVu Sans', 'DejaVu Serif', 'DejaVu Sans Mono', 'Liberation Sans', 'Liberation Serif', 'Ubuntu', 'Noto Sans CJK JP', 'Noto Sans Mono', 'Roboto', 'Roboto Condensed', 'Roboto Mono', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Inter', 'Oswald', 'Raleway', 'Source Sans Pro', 'Source Sans 3', 'Nunito', 'Merriweather', 'PT Sans', 'Playfair Display', 'Fira Sans', 'Fira Code', 'Cascadia Code', 'Cascadia Mono', 'JetBrains Mono', 'Bebas Neue', 'Anton', 'Kanit', 'Prompt', 'Sarabun', 'TH Sarabun New', 'THSarabunNew', 'Mitr', 'Niramit', 'Pridi', 'Taviraj', 'Trirong', 'K2D', 'Krub', 'Athiti', 'Chakra Petch', 'Maitree', 'Mali', 'Bai Jamjuree', 'Itim', 'Pattaya', 'Sriracha', 'Charm', 'Charmonman', 'KoHo', 'IBM Plex Sans', 'IBM Plex Sans Thai', 'IBM Plex Mono', 'Noto Serif Thai', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans SC', 'Noto Color Emoji', 'Source Code Pro', 'Work Sans', 'Rubik', 'Quicksand', 'Barlow', 'Karla', 'Mulish', 'Cabin', 'Josefin Sans', 'Libre Baskerville', 'Lora', 'Crimson Text', 'EB Garamond', 'Cinzel', 'Comfortaa', 'Pacifico', 'Lobster', 'Dancing Script'];
+    const DESK = [...new Set(FONTS.concat(MORE, ['Leelawadee UI', 'Angsana New', 'Browallia New', 'Cordia New', 'DilleniaUPC', 'Noto Sans Thai', 'Malgun Gothic', 'Yu Gothic', 'Microsoft YaHei', 'Segoe UI Semibold', 'Bahnschrift']))];
     const fontControl = '<div class="fs"><input data-k="font" type="text"' + (desktop ? '' : ' list="subLiveFonts"') + ' placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + (desktop ? '<div class="fl" hidden></div>' : '') + '</div>'
       + (desktop ? '' : '<datalist id="subLiveFonts">' + FONTS.filter(n => desktop || avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>');
 
@@ -288,6 +289,12 @@
     ['keydown', 'keyup', 'keypress'].forEach(ev => panel.addEventListener(ev, e => {
       if (ev === 'keydown' && e.key === 'Escape') panel.hidden = true;
       e.stopPropagation();
+      // Something earlier (the player's G/H shortcuts, another plugin) can cancel the key before the box gets it: type it ourselves
+      const i = e.target;
+      if (ev === 'keydown' && e.defaultPrevented && i.type === 'text' && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        i.setRangeText(e.key, i.selectionStart, i.selectionEnd, 'end');
+        i.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     }));
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 
@@ -303,7 +310,7 @@
       };
       addPool = n => pool.add(n);
       fi.addEventListener('focus', show);
-      fi.addEventListener('input', show);
+      fi.addEventListener('input', () => { if (/^[A-Za-z0-9][A-Za-z0-9 ]{0,40}$/.test(fi.value) && avail(fi.value)) pool.add(fi.value); show(); });
       fi.addEventListener('blur', () => { fl.hidden = true; });
       // mousedown, not click: the input must not lose focus first
       fl.addEventListener('mousedown', e => {
