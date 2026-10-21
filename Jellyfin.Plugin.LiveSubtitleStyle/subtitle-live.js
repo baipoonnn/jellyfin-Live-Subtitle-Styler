@@ -124,6 +124,10 @@
       #subLivePanel .cp input{width:5.6em;box-sizing:border-box;padding:.5em .5em;border-radius:.6em;background:#ffffff0d;border:1px solid #ffffff26;color:#fff;font:inherit;text-transform:lowercase}
       #subLivePanel .sg{display:grid;grid-template-columns:repeat(4,1.3em);gap:.25em}
       #subLivePanel .sg button{width:1.3em;height:1.3em;padding:0;border-radius:.3em;border:1px solid #ffffff66;cursor:pointer}
+      #subLivePanel .fl{position:absolute;left:0;right:0;top:100%;z-index:3;max-height:11em;overflow:auto;margin-top:.2em;background:#1c1c20;border:1px solid #ffffff26;border-radius:.6em;box-shadow:0 .5em 1.5em #000a}
+      #subLivePanel .fl[hidden]{display:none}
+      #subLivePanel .fl button{display:block;width:100%;padding:.45em .7em;text-align:left;background:none;border:0;color:#fff;font:inherit;cursor:pointer}
+      #subLivePanel .fl button:hover{background:#ffffff1a}
       #subLivePanel .tg{position:relative;width:3.2em;height:1.8em}
       #subLivePanel .tg input{position:absolute;inset:0;z-index:1;margin:0;opacity:0;cursor:pointer}
       #subLivePanel .tg i{position:absolute;inset:0;border-radius:99px;background:#ffffff26;transition:.15s}
@@ -154,8 +158,10 @@
     const color = k => desktop
       ? `<div class="cp"><input data-k="${k}" type="text" maxlength="7" placeholder="#ffffff" autocomplete="off" spellcheck="false"><div class="sg">${SWATCHES.map(c => `<button type="button" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div></div>`
       : `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
-    const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
-      + '<datalist id="subLiveFonts">' + FONTS.filter(n => desktop || avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb || desktop ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>';
+    // The desktop browser draws no <datalist> popup: it gets its own suggestion list
+    const DESK = FONTS.concat(['Leelawadee UI', 'Angsana New', 'Browallia New', 'Cordia New', 'DilleniaUPC', 'Noto Sans Thai', 'Malgun Gothic', 'Yu Gothic', 'Microsoft YaHei', 'Segoe UI Semibold', 'Bahnschrift']);
+    const fontControl = '<div class="fs"><input data-k="font" type="text"' + (desktop ? '' : ' list="subLiveFonts"') + ' placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + (desktop ? '<div class="fl" hidden></div>' : '') + '</div>'
+      + (desktop ? '' : '<datalist id="subLiveFonts">' + FONTS.filter(n => desktop || avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>');
 
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
@@ -235,6 +241,27 @@
       i.dispatchEvent(new Event('input', { bubbles: true }));
     });
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
+
+    if (desktop) {
+      const fi = panel.querySelector('input[data-k=font]'), fl = panel.querySelector('.fl');
+      const show = () => {
+        const q = DESK.includes(fi.value) ? '' : fi.value.toLowerCase();
+        fl.innerHTML = DESK.filter(n => n.toLowerCase().includes(q)).map(n => `<button type="button" data-f="${n}" style="font-family:'${n}',sans-serif">${n}</button>`).join('');
+        fl.hidden = !fl.firstChild;
+      };
+      fi.addEventListener('focus', show);
+      fi.addEventListener('input', show);
+      fi.addEventListener('blur', () => { fl.hidden = true; });
+      // mousedown, not click: the input must not lose focus first
+      fl.addEventListener('mousedown', e => {
+        const b = e.target.closest('[data-f]');
+        if (!b) return;
+        e.preventDefault();
+        fi.value = b.dataset.f;
+        fi.dispatchEvent(new Event('input', { bubbles: true }));
+        fl.hidden = true;
+      });
+    }
 
     // Chrome can list the fonts really installed on this device (asks permission once): fills the suggestions with exact names
     let scanned = false;

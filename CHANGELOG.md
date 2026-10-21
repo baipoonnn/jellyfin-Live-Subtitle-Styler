@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.4.0
+- Jellyfin Desktop: the font box shows its own clickable suggestion list, because the desktop browser draws no datalist popup.
+
 ## 1.3.3.0
 - Jellyfin Desktop: subtitle changes now apply while a slider is being dragged, not only after the mouse is released.
 
