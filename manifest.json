@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.1.6.0",
+        "changelog": "Fixed the Aa button sometimes missing after switching movie or episode. Jellyfin keeps more than one copy of the OSD button row and rebuilds them on each playback, but the script looked for a single button and could leave the visible row without one. It now puts a button next to every gear that lacks one.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.6.0.zip",
+        "checksum": "2ce3ca93ad56d91344a1b0be02759b6d",
+        "timestamp": "2026-10-21T12:48:35Z"
+      },
+      {
         "version": "1.1.5.0",
         "changelog": "Removed the header (badge, title and subtitle) from the popup; it now starts directly with the settings. Shorter Position hint.",
         "targetAbi": "12.1.0.0",

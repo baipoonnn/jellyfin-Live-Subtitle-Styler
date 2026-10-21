@@ -171,17 +171,15 @@
     // "Aa" as an SVG glyph: clearly different from the stock subtitle-track button
     const AA = '<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><text x="12" y="17" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" font-family="Arial,sans-serif">Aa</text></svg>';
 
-    // Put the button in the OSD button row, left of the gear; the OSD is rebuilt per playback so retry briefly
-    const mount = (tries = 12) => {
-      if (document.getElementById('btnSubLive')) return;
-      // gear first; else the stock subtitles button (we go after it)
-      const gear = document.querySelector('.btnVideoOsdSettings');
-      const anchor = gear || document.querySelector('.btnSubtitles');
-      if (!anchor) { if (tries) setTimeout(() => mount(tries - 1), 500); return; }
+    // One button next to every OSD gear that lacks one. Jellyfin keeps more than one copy of the button row and
+    // rebuilds them when the episode changes, so check each gear instead of looking for a single element.
+    const has = g => g.previousElementSibling?.classList.contains('btnSubLive');
+    const mountOn = (gear, before) => {
       // Clone the gear: same element type, classes and styling as the other OSD buttons
-      const btn = anchor.cloneNode(false);
-      btn.id = 'btnSubLive';
+      const btn = gear.cloneNode(false);
+      btn.removeAttribute('id');
       btn.classList.remove('btnVideoOsdSettings', 'btnSubtitles', 'hide');
+      btn.classList.add('btnSubLive');
       btn.title = 'Subtitle style';
       btn.setAttribute('aria-label', 'Subtitle style');
       btn.innerHTML = AA;
@@ -193,27 +191,33 @@
           panel.style.bottom = (innerHeight - r.top + 12) + 'px';
         }
       };
-      if (gear) gear.before(btn);
-      else anchor.after(btn);
+      before ? gear.before(btn) : gear.after(btn);
+    };
+    const gearsMissing = () => [...document.querySelectorAll('.btnVideoOsdSettings')].filter(g => !has(g));
+    const mountAll = () => {
+      const gears = gearsMissing();
+      if (gears.length) gears.forEach(g => mountOn(g, true));
+      // no gear in this build: go after the stock subtitles button instead
+      else if (!document.querySelector('.btnVideoOsdSettings')) document.querySelectorAll('.btnSubtitles').forEach(g => { if (!g.nextElementSibling?.classList.contains('btnSubLive')) mountOn(g, false); });
     };
     const route = () => {
-      if (location.hash.startsWith('#/video')) mount();
+      if (location.hash.startsWith('#/video')) mountAll();
       else panel.hidden = true;
     };
     addEventListener('popstate', () => setTimeout(route, 500));
     addEventListener('hashchange', () => setTimeout(route, 500));
     document.addEventListener('click', e => {
-      if (!panel.hidden && !panel.contains(e.target) && !e.target.closest('#btnSubLive')) panel.hidden = true;
+      if (!panel.hidden && !panel.contains(e.target) && !e.target.closest('.btnSubLive')) panel.hidden = true;
     });
     addEventListener('keydown', e => { if (e.key === 'Escape') panel.hidden = true; });
-    // The OSD is built when playback starts, whatever the route timing: watch for it (childList only, one getElementById when mounted)
+    // The OSD is built (and rebuilt on every episode change) whatever the route timing: watch for it (childList only, throttled)
     let queued = false;
     new MutationObserver(() => {
       if (queued) return;
       queued = true;
       requestAnimationFrame(() => {
         queued = false;
-        try { if (!document.getElementById('btnSubLive') && document.querySelector('.btnVideoOsdSettings')) mount(0); } catch (e) { console.error('subLive', e); }
+        try { if (gearsMissing().length) mountAll(); } catch (e) { console.error('subLive', e); }
       });
     }).observe(document.body, { childList: true, subtree: true });
     route();

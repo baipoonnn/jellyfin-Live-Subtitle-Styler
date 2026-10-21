@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.6.0
+- Fixed the Aa button sometimes missing after switching movie or episode. Jellyfin keeps more than one copy of the OSD button row and rebuilds them on each playback, but the script looked for a single button and could leave the visible row without one. It now puts a button next to every gear that lacks one.
+
 ## 1.1.5.0
 - Removed the header (badge, title and subtitle) from the popup; it now starts directly with the settings. Shorter Position hint.
 
