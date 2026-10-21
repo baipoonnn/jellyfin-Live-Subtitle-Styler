@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.14.0
+- The Allow hint now stays on the panel if you close and reopen it while the browser prompt is open, and it appears again after the font permission is reset (no page reload needed). It is skipped when the permission is already blocked or granted.
+
 ## 1.3.13.0
 - When the browser asks permission to list installed fonts, the styler panel is dimmed and blurred behind a message telling you to press Allow (matches the theme color). It goes away once you answer, or when you click it.
 

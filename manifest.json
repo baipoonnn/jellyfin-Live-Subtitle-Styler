@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.14.0",
+        "changelog": "The Allow hint stays with the panel when closed and reopened, and returns after the font permission is reset.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.14.0.zip",
+        "checksum": "1b7318931f5adc111a3f33a68ec3956c",
+        "timestamp": "2026-10-21T18:00:00Z"
+      },
+      {
         "version": "1.3.13.0",
         "changelog": "The styler panel is dimmed and blurred with a 'click Allow' hint while the browser asks to list fonts.",
         "targetAbi": "12.1.0.0",
