@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.1.0
+- Jellyfin Desktop: the font box now suggests common system fonts and says the font must be installed on the computer, instead of running browser font checks and Google Fonts lookups that do not apply to mpv.
+
 ## 1.3.0.0
 - Jellyfin Desktop support: in the desktop client (mpv playback) the Aa panel now restyles subtitles live through the client's own subtitle settings and manual mpv config (size, font, colors, background box, outline, position).
 

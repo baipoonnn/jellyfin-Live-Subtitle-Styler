@@ -10,6 +10,8 @@
     const WEB = ['Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Inter', 'Noto Sans', 'Noto Serif', 'Merriweather', 'Oswald'];
     // Sample text in several scripts, so a font is detected whichever script it covers
     const PROBES = ['mwiQ0Oil', 'Яжфыя', 'αβγδε', 'مرحبا', 'שלום', 'नमस्ते', 'สวัสดี', '你好世界', 'こんにちは', '안녕하세요'];
+    // Jellyfin Desktop draws subtitles with mpv and the computer's fonts: the browser's font checks and Google Fonts do not apply
+    const desktop = !!window.jmpInfo?.settings?.subtitles;
     const family = n => /^[A-Za-z0-9][A-Za-z0-9 ]{0,40}$/.test(n);
     // True when this browser can really render the font: its text measures differently from every fallback for at least one script
     const avail = n => {
@@ -37,7 +39,7 @@
     let lookup;
     const wantWeb = () => {
       clearTimeout(lookup);
-      if (s.font && avail(s.font) !== true) lookup = setTimeout(() => loadWeb(s.font), 600);
+      if (!desktop && s.font && avail(s.font) !== true) lookup = setTimeout(() => loadWeb(s.font), 600);
     };
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
@@ -143,7 +145,7 @@
     const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
     const color = k => `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
-      + '<datalist id="subLiveFonts">' + FONTS.filter(n => avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>';
+      + '<datalist id="subLiveFonts">' + FONTS.filter(n => desktop || avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb || desktop ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>';
 
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
@@ -177,7 +179,9 @@
       const el = panel.querySelector('[data-fs]');
       const n = s.font;
       let text = 'Player default', color = '';
-      if (n) {
+      if (desktop) {
+        text = n ? 'Must be installed on this computer' : 'Player default';
+      } else if (n) {
         // A name that was requested from Google Fonts is a web font from then on, even though the browser can now render it
         if (n in web) {
           if (web[n] === true) text = 'Web font from Google Fonts';
