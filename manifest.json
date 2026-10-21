@@ -1,0 +1,45 @@
+[
+  {
+    "guid": "5b0c3a8e-7d1f-4c62-9a44-3e2f6b1d8c07",
+    "name": "Live Subtitle Style",
+    "description": "Adds a subtitle style button to the Jellyfin web player OSD. Size, font, color, background, outline and position change live, with no playback restart. Requires the File Transformation plugin.",
+    "overview": "Live subtitle styling in the web player",
+    "owner": "baipoonnn",
+    "category": "General",
+    "imageUrl": "",
+    "versions": [
+      {
+        "version": "1.0.8.0",
+        "changelog": "The font control is a type-in field with suggestions, so any font installed on the viewing device works. Thai fonts (Angsana New, AngsanaUPC, DilleniaUPC, Cordia New, Browallia New, TH Sarabun New, Leelawadee UI) come first.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.8.0.zip",
+        "checksum": "2b59aef10055d760a2fab37f1005ad0d",
+        "timestamp": "2026-10-21T11:58:13Z"
+      },
+      {
+        "version": "1.0.7.0",
+        "changelog": "Full version history in the plugin metadata.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.7.0.zip",
+        "checksum": "f00d9fe08770827ee9479625c13958d8",
+        "timestamp": "2026-10-21T11:58:13Z"
+      },
+      {
+        "version": "1.0.6.0",
+        "changelog": "Font selector (live); new 'Aa' icon instead of the subtitle-picker look-alike.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.6.0.zip",
+        "checksum": "998596b50210b4d44fce73ff68717f39",
+        "timestamp": "2026-10-21T11:58:13Z"
+      },
+      {
+        "version": "1.0.5.0",
+        "changelog": "Fixed the OSD and keyboard controls disappearing. File Transformation matched index.html as a regex, which also matched the video player's JavaScript chunk, and the script tag was appended to it. Only markup is modified now.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.5.0.zip",
+        "checksum": "99c27c16a514dfb8c2a17217ef38fff8",
+        "timestamp": "2026-10-21T11:58:13Z"
+      }
+    ]
+  }
+]
