@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.0.9.0",
+        "changelog": "Added Google Fonts with Thai support (Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai), listed as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices without the Windows Thai fonts.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.0.9.0.zip",
+        "checksum": "18646004a4d96b2b94989b17600066d3",
+        "timestamp": "2026-10-21T12:02:37Z"
+      },
+      {
         "version": "1.0.8.0",
         "changelog": "The font control is a type-in field with suggestions, so any font installed on the viewing device works. Thai fonts (Angsana New, AngsanaUPC, DilleniaUPC, Cordia New, Browallia New, TH Sarabun New, Leelawadee UI) come first.",
         "targetAbi": "12.1.0.0",

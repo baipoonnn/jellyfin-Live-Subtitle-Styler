@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.9.0
+- Added Google Fonts with Thai support (Sarabun, Mitr, Prompt, Kanit, Noto Sans Thai), listed as web fonts in the font field. A font is fetched from Google Fonts only when you select it, so it works on devices without the Windows Thai fonts.
+
 ## 1.0.8.0
 - The font control is now a type-in field with suggestions, so any font installed on the viewing device can be used. Thai fonts (Angsana New, AngsanaUPC, DilleniaUPC, Cordia New, Browallia New, TH Sarabun New, Leelawadee UI) are listed first.
 

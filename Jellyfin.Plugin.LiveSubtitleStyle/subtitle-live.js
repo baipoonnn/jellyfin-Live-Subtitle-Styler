@@ -5,6 +5,17 @@
     const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, pos: 8, font: '' };
     // Suggestions only: any font installed on the viewing device can be typed in
     const FONTS = ['Angsana New', 'AngsanaUPC', 'DilleniaUPC', 'Cordia New', 'Browallia New', 'TH Sarabun New', 'Leelawadee UI', 'Tahoma', 'Arial', 'Verdana', 'Segoe UI', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
+    // Google Fonts with Thai glyphs, fetched only when one is selected (works on any device)
+    const WEB = ['Sarabun', 'Mitr', 'Prompt', 'Kanit', 'Noto Sans Thai'];
+    const loaded = new Set();
+    const loadWeb = name => {
+      if (!WEB.includes(name) || loaded.has(name)) return;
+      loaded.add(name);
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@400;700&display=swap`;
+      document.head.append(link);
+    };
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
 
@@ -13,6 +24,7 @@
     const apply = () => {
       try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
       const bg = s.bgColor + Math.round(s.bg * 255).toString(16).padStart(2, '0');
+      loadWeb(s.font);
       const ff = s.font ? `font-family:"${s.font.replace(/["\;{}]/g, '')}", sans-serif` : '';
       const sh = s.edge ? '0 0 4px #000,1px 1px 2px #000,-1px -1px 2px #000' : 'none';
       // !important beats the inline styles Jellyfin sets on the subtitle element
@@ -37,7 +49,7 @@
     panel.id = 'subLivePanel';
     panel.hidden = true;
     const fontRow = '<label class="r">Font<input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false"></label>'
-      + '<datalist id="subLiveFonts">' + FONTS.map(n => `<option value="${n}">`).join('') + '</datalist>';
+      + '<datalist id="subLiveFonts">' + FONTS.map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
     panel.innerHTML = '<h3>Subtitle style</h3>'
       + row('Size', 'size', 'type=range min=.5 max=3 step=.05') + fontRow + row('Color', 'color', 'type=color')
       + row('Background', 'bg', 'type=range min=0 max=1 step=.05') + row('Bg color', 'bgColor', 'type=color')
