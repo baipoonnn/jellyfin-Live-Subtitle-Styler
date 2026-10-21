@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.1.5.0",
+        "changelog": "Removed the header (badge, title and subtitle) from the popup; it now starts directly with the settings. Shorter Position hint.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.1.5.0.zip",
+        "checksum": "0e59629a11abc84d90ba743534c38a00",
+        "timestamp": "2026-10-21T12:40:41Z"
+      },
+      {
         "version": "1.1.4.0",
         "changelog": "Added an Outline thickness slider (0.5 to 6 px) under the Outline toggle; it is inactive while Outline is off. The Size limit was raised from 300% to 500%.",
         "targetAbi": "12.1.0.0",

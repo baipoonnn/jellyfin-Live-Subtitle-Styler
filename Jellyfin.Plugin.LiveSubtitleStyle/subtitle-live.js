@@ -51,12 +51,8 @@
     // Popup styling: static
     const ui = document.createElement('style');
     ui.textContent = `
-      #subLivePanel{position:fixed;z-index:99999;width:28em;max-width:calc(100vw - 16px);max-height:calc(100vh - 110px);overflow:auto;box-sizing:border-box;padding:1.1em 1.2em;border-radius:1.1em;background:rgba(18,18,20,.97);border:1px solid #ffffff1f;box-shadow:0 1em 3em #000c;color:#fff;font-size:15px;line-height:1.3;font-family:inherit}
+      #subLivePanel{position:fixed;z-index:99999;width:28em;max-width:calc(100vw - 16px);max-height:calc(100vh - 110px);overflow:auto;box-sizing:border-box;padding:.8em 1.2em;border-radius:1.1em;background:rgba(18,18,20,.97);border:1px solid #ffffff1f;box-shadow:0 1em 3em #000c;color:#fff;font-size:15px;line-height:1.3;font-family:inherit}
       #subLivePanel[hidden]{display:none}
-      #subLivePanel .h{display:flex;gap:.9em;align-items:center;padding-bottom:.9em;margin-bottom:.5em;border-bottom:1px solid #ffffff1a}
-      #subLivePanel .bd{flex:none;width:2.9em;height:2.9em;border-radius:.7em;display:grid;place-items:center;font-weight:600;font-size:1.3em;background:linear-gradient(#7a1019,#4d0a10);border:1px solid #c4202e66}
-      #subLivePanel h3{margin:0;font-size:1.25em;font-weight:600}
-      #subLivePanel .h p{margin:.15em 0 0;color:#ffffff99;font-size:.85em}
       #subLivePanel .r{display:flex;align-items:center;gap:.8em;padding:.35em 0}
       #subLivePanel .ic{flex:none;width:2.4em;height:2.4em;border-radius:.6em;display:grid;place-items:center;background:#ffffff0d;border:1px solid #ffffff14;color:#ffffffcc}
       #subLivePanel .t{flex:1;min-width:0;font-weight:500}
@@ -106,15 +102,14 @@
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
     panel.hidden = true;
-    panel.innerHTML = '<div class="h"><div class="bd">Aa</div><div><h3>Subtitle style</h3><p>Customize the appearance of subtitles</p></div></div>'
-      + row('size', 'Size', '', range('size', 'min=.5 max=5 step=.05'))
+    panel.innerHTML = row('size', 'Size', '', range('size', 'min=.5 max=5 step=.05'))
       + row('font', 'Font', '<span data-fs></span>', fontControl)
       + row('drop', 'Text color', '', color('color'))
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
       + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.5 max=6 step=.5'))
-      + row('pos', 'Position', 'Move up or down (below 0 = lower)', range('pos', 'min=-10 max=40 step=.5'))
+      + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 

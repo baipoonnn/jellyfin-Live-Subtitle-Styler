@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.5.0
+- Removed the header (badge, title and subtitle) from the popup; it now starts directly with the settings. Shorter Position hint.
+
 ## 1.1.4.0
 - Added an Outline thickness slider (0.5 to 6 px) under the Outline toggle; it is inactive while Outline is off. The Size limit was raised from 300% to 500%.
 
