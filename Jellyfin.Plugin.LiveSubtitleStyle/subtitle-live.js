@@ -19,10 +19,12 @@
         return PROBES.some(p => ['monospace', 'serif', 'sans-serif'].some(b => w(`"${n}",${b}`, p) !== w(b, p)));
       } catch { return null; }
     };
+    // Opt-out of all Google Fonts requests: localStorage.subLiveNoWeb = '1'
+    const noWeb = (() => { try { return !!localStorage.getItem('subLiveNoWeb'); } catch { return false; } })();
     const web = {}; // family -> true / false once Google Fonts has answered, null while waiting
     let refreshFont = () => {};
     const loadWeb = name => {
-      if (!family(name) || name in web) return;
+      if (noWeb || !family(name) || name in web) return;
       web[name] = null;
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -39,6 +41,14 @@
     };
     let s = { ...D };
     try { Object.assign(s, JSON.parse(localStorage.getItem(KEY))); } catch {}
+    // Stored values are never trusted: numbers are clamped and colours checked before they reach the stylesheet
+    const num = (v, lo, hi, d) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Math.min(hi, Math.max(lo, Number(v))) : d);
+    const hex = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
+    s = {
+      size: num(s.size, .5, 5, D.size), color: hex(s.color, D.color), bg: num(s.bg, 0, 1, D.bg), bgColor: hex(s.bgColor, D.bgColor),
+      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .5, 6, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
+      font: typeof s.font === 'string' && s.font.length <= 60 ? s.font : '',
+    };
 
     // Subtitle styling: rewritten on every change
     const css = document.createElement('style');
@@ -109,7 +119,7 @@
     const range = (k, attrs) => `<input data-k="${k}" type="range" ${attrs}><output data-o="${k}"></output>`;
     const color = k => `<label class="sw"><input data-k="${k}" type="color">${svg(P.chev, 18)}</label>`;
     const fontControl = '<div class="fs"><input data-k="font" type="text" list="subLiveFonts" placeholder="Default" autocomplete="off" spellcheck="false">' + svg(P.chev, 20) + '</div>'
-      + '<datalist id="subLiveFonts">' + FONTS.filter(n => avail(n) !== false).map(n => `<option value="${n}">`).join('') + WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('') + '</datalist>';
+      + '<datalist id="subLiveFonts">' + FONTS.filter(n => avail(n) !== false).map(n => `<option value="${n}">`).join('') + (noWeb ? '' : WEB.map(n => `<option value="${n}" label="${n} (web font)">`).join('')) + '</datalist>';
 
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
@@ -153,6 +163,7 @@
           const local = avail(n);
           if (local) { text = 'Installed on this device'; color = '#6fd08c'; }
           else if (!family(n)) { text = 'Not found on this device or Google Fonts'; color = '#ff8a8a'; }
+          else if (noWeb) { text = 'Not installed on this device'; color = '#ff8a8a'; }
           else text = local === null ? '' : 'Looking up on Google Fonts…';
         }
       }

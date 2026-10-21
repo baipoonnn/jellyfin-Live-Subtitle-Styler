@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1.0
+- Security hardening: values read back from browser storage are now clamped and validated before they reach the stylesheet. Added an opt-out for all Google Fonts requests (localStorage.subLiveNoWeb = '1'). README shortened and a security and privacy section added.
+
 ## 1.2.0.0
 - Made the font handling language-neutral. The suggestions are now common system fonts plus general Google web fonts. Any font name you type that is not installed is looked up on Google Fonts after a short pause (letters, digits and spaces only). The installed-font check uses sample text from ten scripts, and a font loaded from Google Fonts is reported as a web font instead of 'Installed on this device'.
 
