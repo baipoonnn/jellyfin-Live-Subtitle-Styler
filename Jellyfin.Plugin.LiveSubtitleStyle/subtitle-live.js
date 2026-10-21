@@ -140,6 +140,11 @@
       #subLivePanel .tg input:checked+i{background:${ACC}}
       #subLivePanel .tg input:checked+i::after{left:1.6em}
       #subLivePanel .f{margin-top:.5em;padding-top:.8em;border-top:1px solid #ffffff1a}
+      #subLiveAsk{position:fixed;z-index:100000;display:grid;place-items:center;border-radius:1.1em;background:#000a;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;font-size:15px;line-height:1.4;font-family:inherit;animation:subLiveIn .2s}
+      #subLiveAsk div{max-width:22em;margin:0 16px;padding:1.2em 1.6em;border-radius:1.1em;text-align:center;background:rgba(18,18,20,.97);border:1px solid ${ACC};box-shadow:0 0 0 .3em color-mix(in srgb,${ACC} 25%,transparent),0 1em 3em #000c}
+      #subLiveAsk b{display:block;margin-bottom:.4em;font-size:1.15em;color:${ACC}}
+      #subLiveAsk em{font-style:normal;font-weight:600;border-bottom:2px solid ${ACC}}
+      @keyframes subLiveIn{from{opacity:0}}
       #subLivePanel .rs{display:flex;align-items:center;gap:.6em;padding:.65em 1em;border-radius:.7em;background:#ffffff0d;border:1px solid #ffffff1f;color:#fff;cursor:pointer;font:inherit}
       #subLivePanel .rs:hover{background:#ffffff1a}`;
     document.head.append(ui);
@@ -343,7 +348,15 @@
     panel.querySelector('input[data-k=font]').addEventListener('focus', () => {
       if (scanned || !window.queryLocalFonts) return;
       scanned = true;
-      window.queryLocalFonts().then(list => {
+      // dim + blur the styler panel so the browser's permission prompt (top-left) is hard to miss
+      const ask = document.createElement('div');
+      ask.id = 'subLiveAsk';
+      const rc = panel.getBoundingClientRect();
+      ask.style.cssText = `left:${rc.left}px;top:${rc.top}px;width:${rc.width}px;height:${rc.height}px`;
+      ask.innerHTML = '<div><b>&#8598; Click Allow</b>Your browser is asking to list the fonts installed on this device. Press <em>Allow</em> in the box at the top-left so Live Subtitle Style can show your fonts.</div>';
+      ask.addEventListener('click', () => ask.remove());
+      document.body.append(ask);
+      window.queryLocalFonts().finally(() => ask.remove()).then(list => {
         const list_ = panel.querySelector('#subLiveFonts');
         const names = [...new Set(list.map(f => f.family))].sort();
         if (desktop) { names.forEach(n => addPool(n)); return; }

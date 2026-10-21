@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.13.0
+- When the browser asks permission to list installed fonts, the styler panel is dimmed and blurred behind a message telling you to press Allow (matches the theme color). It goes away once you answer, or when you click it.
+
 ## 1.3.12.0
 - Outline thickness limit raised from 6 to 15.
 

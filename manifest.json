@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.13.0",
+        "changelog": "The styler panel is dimmed and blurred with a 'click Allow' hint while the browser asks to list fonts.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.13.0.zip",
+        "checksum": "b359004eec111da4e1a0d100cb4b58ac",
+        "timestamp": "2026-10-21T17:52:13Z"
+      },
+      {
         "version": "1.3.12.0",
         "changelog": "Outline thickness limit raised from 6 to 15.",
         "targetAbi": "12.1.0.0",
