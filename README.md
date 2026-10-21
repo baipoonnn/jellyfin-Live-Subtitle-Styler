@@ -45,14 +45,6 @@ Only text subtitles (SRT, WebVTT) are restyled. ASS/SSA and PGS keep their own s
 
 Type any font name. Only fonts your browser can really use are suggested. If a font is not installed, it is looked up on [Google Fonts](https://fonts.google.com) (a few popular ones are suggested), so it works on any device. A status line under the font says which case applies.
 
-## Security and privacy
-
-- **No tracking, no accounts.** The script makes no requests to your server or anyone else, except Google Fonts (below). It never reads Jellyfin's API, your login, cookies or tokens.
-- **Local storage only.** Your choices are kept in one browser `localStorage` entry. Stored values are validated before use.
-- **Google Fonts.** A font name you type that is not installed (letters, digits and spaces only) is requested from `fonts.googleapis.com`, which sees your IP and that name. Installed fonts and all other settings never leave the browser. To turn this off, run `localStorage.subLiveNoWeb = '1'` in the browser console.
-- **Server side.** The plugin is a tiny DLL that registers one callback with File Transformation and adds the script to `index.html`. It has no endpoints, no network or file access, and never touches your users or library.
-- **Trust.** Like any Jellyfin plugin it runs with the server's permissions, and the script runs for everyone who opens the web client. The source is in this repo; release zips in `dist/` are built from it and listed with MD5 checksums in `manifest.json`.
-
 ## Troubleshooting
 
 - **Installed fonts are missing, or the status is red.** The browser is hiding them. In Brave set Shields > Advanced View > **Block fingerprinting** to Disabled for the site; in Firefox turn off `privacy.resistFingerprinting`. Google Fonts work either way.
