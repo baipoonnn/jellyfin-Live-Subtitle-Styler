@@ -17,7 +17,7 @@
 
 Adds an **Aa** button next to the gear in the player. It opens a popup where size, font, colors, outline and position change the subtitle on screen **instantly**, with no playback restart. Choices are remembered in the browser.
 
-Works in the **web player** and in the **[Jellyfin Desktop](https://github.com/jellyfin/jellyfin-desktop) client** (mpv playback), see [Jellyfin Desktop](#jellyfin-desktop).
+Works in the **web player** and in the **[Jellyfin Desktop](https://github.com/jellyfin/jellyfin-desktop) client** (mpv playback).
 
 ## Install
 
