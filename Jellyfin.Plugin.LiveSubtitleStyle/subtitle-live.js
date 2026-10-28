@@ -53,8 +53,11 @@
     };
 
     // Jellyfin Desktop plays through mpv, which draws the subtitles itself, so the DOM rules below do nothing there.
-    // Its settings bridge applies live: map the style onto the subtitles section and the manual mpv config (position, box)
-    let pushT = 0, ready = false, unforce = false;
+    // Its settings bridge applies live. The style lives only in a marked block of the manual mpv config, which Desktop
+    // applies after its own subtitle settings; those settings are never written. Only options mpv uses for text
+    // subtitles (and for ASS only when the override is forced) go in: never sub-scale or sub-pos, which mpv also
+    // applies to ASS, so with the override off ASS looks exactly as Desktop's own settings make it.
+    let pushT = 0, ready = false, reset = false;
     const push = () => {
       const j = window.jmpInfo?.settings;
       if (!j?.subtitles || !j.other || !window.api?.settings) return;
@@ -62,24 +65,34 @@
       if (pushT) return;
       pushT = setTimeout(() => {
         pushT = 0;
-        const v = {
-          size: Math.round(32 * s.size), font: s.font || 'sans-serif', color: s.color,
-          border_color: '#000000',
-          background_color: s.bgColor, background_transparency: Math.round(s.bg * 255).toString(16).padStart(2, '0'),
-        };
-        for (const k in v) if (j.subtitles[k] !== v[k]) j.subtitles[k] = v[k];
-        // The settings list has no free position or box style, so own a marked block of the manual mpv config
-        // Desktop applies this config after its own subtitle settings, so forcing the ASS override here wins over the
-        // native ASS Style Override without changing it. Turned off, mpv keeps force until something sets it again:
-        // write the native value once, then drop the line so later native changes apply as usual.
-        const ass = s.assOv ? 'sub-ass-override=force' : unforce ? `sub-ass-override=${j.subtitles.ass_style_override || 'scale'}` : '';
-        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-size=${s.edge ? +s.edgeW.toFixed(2) : 0}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, ass, '# /subLive'].filter(Boolean).join('\n');
+        const n = j.subtitles;
+        // Desktop turns its own Size into sub-scale, which multiplies font, outline and blur: divide it back out
+        const ns = n.size > 0 ? n.size / 32 : 1;
+        // mpv sizes are at 720 lines (default font 38, bottom margin 34); Position 0 matches mpv's default margin
+        const conf = ['# subLive',
+          s.font && `sub-font=${s.font.replace(/[\r\n]/g, '')}`,
+          `sub-font-size=${+(38 * s.size / ns).toFixed(2)}`,
+          `sub-color=${s.color}`, 'sub-border-color=#000000',
+          `sub-back-color=#${Math.round(s.bg * 255).toString(16).padStart(2, '0')}${s.bgColor.slice(1)}`,
+          `sub-border-size=${s.edge ? +(s.edgeW * s.size / ns).toFixed(2) : 0}`,
+          `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`,
+          // ponytail: margins cannot go below 0, so Position below about -4.7 sits at the bottom edge on desktop
+          `sub-margin-y=${Math.round(Math.min(600, Math.max(0, 34 + s.pos * 7.2)))}`,
+          // Forcing the ASS override here wins over Desktop's ASS Style Override without changing it
+          s.assOv && 'sub-ass-override=force',
+          // mpv keeps a value until something sets it again: after the override is turned off (or an older version set
+          // sub-scale / sub-pos), write Desktop's own values once, then drop the lines so its settings apply as usual
+          ...(reset ? [!s.assOv && `sub-ass-override=${n.ass_style_override || 'scale'}`, `sub-scale=${ns}`,
+            `sub-pos=${(p => p.length === 2 && p[1] !== 'bottom' ? 10 : 100)(String(n.placement ?? '').split(','))}`] : []),
+          '# /subLive'].filter(Boolean).join('\n');
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
         if (j.other.other_conf !== next) j.other.other_conf = next;
-        if (unforce) { unforce = false; setTimeout(push, 300); }
+        if (reset) { reset = false; setTimeout(push, 300); }
       }, 80);
     };
+    // Desktop's Size changes the divisor above: follow it once this plugin owns a block
+    window.jmpInfo?.settingsUpdate?.push(sec => { if (sec === 'subtitles' && /# subLive/.test(window.jmpInfo.settings.other?.other_conf ?? '')) push(); });
 
     // Subtitle styling: rewritten on every change
     const css = document.createElement('style');
@@ -271,7 +284,7 @@
       paint(i);
       if (k === 'font') paintFont();
       if (k === 'edge') edgeUi();
-      if (k === 'assOv') { unforce = !s.assOv; lockUi(); }
+      if (k === 'assOv') { reset = !s.assOv; lockUi(); }
       apply();
     });
     // In-page colour picker (desktop): saturation/brightness square plus a hue slider, writing into the hex box
