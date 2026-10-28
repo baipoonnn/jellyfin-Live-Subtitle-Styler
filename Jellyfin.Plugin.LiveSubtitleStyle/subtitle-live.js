@@ -191,6 +191,8 @@
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
       + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=15 step=.1'))
       + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
+      // mpv's own setting, global to every ASS file: only the desktop client has it
+      + (desktop ? row('font', 'Override ASS style', 'Use this style for ASS subtitles too (signs and effects may break)', '<label class="tg"><input data-a type="checkbox"><i></i></label>') : '')
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 
@@ -326,11 +328,16 @@
     // cannot reach them, so the panel is locked while one plays. The server says which subtitle stream this device plays.
     const LOCK = { ass: 'ass', ssa: 'ass', pgssub: 'img', dvdsub: 'img', dvbsub: 'img', vobsub: 'img' };
     let kind = '';
+    const assOn = () => window.jmpInfo?.settings?.subtitles?.ass_style_override === 'force';
     const lockUi = () => {
-      const locked = !!kind;
+      const ov = panel.querySelector('[data-a]');
+      if (ov) ov.checked = assOn();
+      const locked = kind === 'img' || (kind === 'ass' && !(desktop && assOn()));
       const note = panel.querySelector('.lkn');
       note.hidden = !locked;
-      note.textContent = kind === 'img' ? 'Image subtitle (PGS / DVD): it cannot be restyled.' : 'ASS subtitle: styled by the file.';
+      note.textContent = kind === 'img' ? 'Image subtitle (PGS / DVD): it cannot be restyled.'
+        : desktop ? 'ASS subtitle: styled by the file. Turn on Override ASS style below to restyle it.'
+        : 'ASS subtitle: styled by the file. Only Jellyfin Desktop can override it.';
       // Fails open: unknown or plain text subtitles leave the panel as it is
       panel.querySelectorAll('.r, .f').forEach(r => { if (r.querySelector('[data-k], [data-reset]')) r.inert = locked; });
     };
@@ -346,6 +353,21 @@
     };
     // Rechecked while the panel is open, so a track switch is seen
     setInterval(() => { if (!panel.hidden) probe(); }, 2000);
+    // Tick: remember the user's own value and force mpv to apply the style to ASS. Untick: put that value back.
+    panel.querySelector('[data-a]')?.addEventListener('change', e => {
+      const j = window.jmpInfo?.settings?.subtitles;
+      if (!j) return;
+      if (e.target.checked) {
+        if (j.ass_style_override !== 'force') try { localStorage.setItem('subLiveAssPrev', j.ass_style_override ?? ''); } catch {}
+        j.ass_style_override = 'force';
+        push();
+      } else {
+        let prev = '';
+        try { prev = localStorage.getItem('subLiveAssPrev') ?? ''; } catch {}
+        j.ass_style_override = prev === 'force' ? '' : prev;
+      }
+      lockUi();
+    });
 
     let addPool = () => {};
     if (desktop) {
