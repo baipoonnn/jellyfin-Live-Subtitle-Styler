@@ -72,7 +72,7 @@
         // Desktop applies this config after its own subtitle settings, so forcing the ASS override here wins over the
         // native ASS Style Override without changing it. Turned off, mpv keeps force until something sets it again:
         // write the native value once, then drop the line so later native changes apply as usual.
-        const ass = s.assOv ? 'sub-ass-override=force' : unforce ? `sub-ass-override=${j.subtitles.ass_style_override || 'yes'}` : '';
+        const ass = s.assOv ? 'sub-ass-override=force' : unforce ? `sub-ass-override=${j.subtitles.ass_style_override || 'scale'}` : '';
         const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-size=${s.edge ? +s.edgeW.toFixed(2) : 0}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, ass, '# /subLive'].filter(Boolean).join('\n');
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
