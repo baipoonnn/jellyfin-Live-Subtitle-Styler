@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.24.0
+- Jellyfin Desktop: Position now moves ASS subtitles when the ASS override is forced (by Override ASS style or by Desktop's own Force / Strip). mpv never applies the bottom margin to ASS, so forced subtitles are placed with sub-pos instead.
+- Jellyfin Desktop: the panel unlocks for ASS when Desktop's own ASS Style Override is Force or Strip, since the style applies to ASS then, with a note saying so.
+
 ## 1.3.23.0
 - Jellyfin Desktop: the style no longer changes Desktop's own subtitle settings. It lives only in the plugin's block of the manual mpv configuration, using options mpv applies to text subtitles (and to ASS only when Override ASS style is on). With the override off, ASS subtitles are no longer resized or moved by the plugin, including after a restart.
 - Jellyfin Desktop: settings that older versions wrote into Desktop's subtitle settings (size, font, colours, background) are put back to Desktop's defaults once, unless you changed them since.
