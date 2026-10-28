@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.23.0
+- Jellyfin Desktop: the style no longer changes Desktop's own subtitle settings. It lives only in the plugin's block of the manual mpv configuration, using options mpv applies to text subtitles (and to ASS only when Override ASS style is on). With the override off, ASS subtitles are no longer resized or moved by the plugin, including after a restart.
+- Jellyfin Desktop: settings that older versions wrote into Desktop's subtitle settings (size, font, colours, background) are put back to Desktop's defaults once, unless you changed them since.
+- Jellyfin Desktop: turning Override ASS style off restores mpv's real default (scale), and Desktop's own Size setting is followed instead of multiplying the plugin's size.
+- Jellyfin Desktop: Position stops at -4.5, the lowest place mpv can put the subtitle.
+
 ## 1.3.22.0
 - Jellyfin Desktop: the "Click Allow" hint no longer covers the panel. Desktop never shows a font permission box, so there was nothing to click.
 

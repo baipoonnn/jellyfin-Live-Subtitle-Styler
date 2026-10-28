@@ -41,9 +41,11 @@ Requires Jellyfin **12.1+** and the [File Transformation](https://github.com/IAm
 | Text color / Background color | any | white / black |
 | Background opacity | 0 to 100 | 0 |
 | Outline / Outline thickness | on, 0.1 to 15 px (drag or type, steps of 0.1) | on, 1.5 px |
-| Position | -10 to 40 (% from the bottom; below 0 goes lower than the edge) | 8 |
+| Position | -10 to 40 (% from the bottom; below 0 goes lower than the edge; Jellyfin Desktop stops at -4.5) | 8 |
 
-Only text subtitles (SRT, WebVTT) are restyled. ASS/SSA and PGS keep their own styling.
+Only text subtitles (SRT, WebVTT) are restyled. ASS/SSA and image subtitles (PGS, DVD) keep their own styling and the panel locks while one plays. In Jellyfin Desktop, **Override ASS style** applies the style to ASS too.
+
+In Jellyfin Desktop the style goes into a marked `# subLive` block of the manual mpv configuration. Desktop's own subtitle settings are not changed, and with Override ASS style off, ASS subtitles look exactly as those settings make them.
 
 ## Fonts
 
