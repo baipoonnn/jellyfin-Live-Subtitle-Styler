@@ -55,9 +55,9 @@
     // Jellyfin Desktop plays through mpv, which draws the subtitles itself, so the DOM rules below do nothing there.
     // Its settings bridge applies live. The style lives only in a marked block of the manual mpv config, which Desktop
     // applies after its own subtitle settings; those settings are never written. Only options mpv uses for text
-    // subtitles (and for ASS only when the override is forced) go in: never sub-scale or sub-pos, which mpv also
-    // applies to ASS, so with the override off ASS looks exactly as Desktop's own settings make it.
-    let pushT = 0, ready = false, reset = false;
+    // subtitles (and for ASS only when the override is forced) go in: never sub-scale, and sub-pos only when forced,
+    // since mpv also applies those to ASS; with the override off ASS looks exactly as Desktop's own settings make it.
+    let pushT = 0, ready = false, reset = false, wasForced = false;
     const push = () => {
       const j = window.jmpInfo?.settings;
       if (!j?.subtitles || !j.other || !window.api?.settings) return;
@@ -68,6 +68,12 @@
         const n = j.subtitles;
         // Desktop turns its own Size into sub-scale, which multiplies font, outline and blur: divide it back out
         const ns = n.size > 0 ? n.size / 32 : 1;
+        // ASS takes the --sub-* options only when forced, here or by Desktop's own Force / Strip. mpv never applies the
+        // bottom margin to ASS, so then Position goes through sub-pos (text follows the same way); otherwise the margin,
+        // which leaves ASS alone. Leaving forced mode resets sub-pos.
+        const forced = !!s.assOv || /^(force|strip)$/.test(n.ass_style_override);
+        if (wasForced && !forced) reset = true;
+        wasForced = forced;
         // mpv sizes are at 720 lines (default font 38, bottom margin 34); Position 0 matches mpv's default margin
         const conf = ['# subLive',
           s.font && `sub-font=${s.font.replace(/[\r\n]/g, '')}`,
@@ -76,13 +82,13 @@
           `sub-back-color=#${Math.round(s.bg * 255).toString(16).padStart(2, '0')}${s.bgColor.slice(1)}`,
           `sub-border-size=${s.edge ? +(s.edgeW * s.size / ns).toFixed(2) : 0}`,
           `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`,
-          `sub-margin-y=${Math.round(Math.min(600, Math.max(0, 34 + s.pos * 7.2)))}`,
+          ...(forced ? ['sub-margin-y=34', `sub-pos=${100 - s.pos}`] : [`sub-margin-y=${Math.round(Math.min(600, Math.max(0, 34 + s.pos * 7.2)))}`]),
           // Forcing the ASS override here wins over Desktop's ASS Style Override without changing it
           s.assOv && 'sub-ass-override=force',
           // mpv keeps a value until something sets it again: after the override is turned off (or an older version set
           // sub-scale / sub-pos), write Desktop's own values once, then drop the lines so its settings apply as usual
           ...(reset ? [!s.assOv && `sub-ass-override=${n.ass_style_override || 'scale'}`, `sub-scale=${ns}`,
-            `sub-pos=${(p => p.length === 2 && p[1] !== 'bottom' ? 10 : 100)(String(n.placement ?? '').split(','))}`] : []),
+            !forced && `sub-pos=${(p => p.length === 2 && p[1] !== 'bottom' ? 10 : 100)(String(n.placement ?? '').split(','))}`] : []),
           '# /subLive'].filter(Boolean).join('\n');
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
