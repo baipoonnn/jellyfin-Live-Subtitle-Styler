@@ -76,7 +76,6 @@
           `sub-back-color=#${Math.round(s.bg * 255).toString(16).padStart(2, '0')}${s.bgColor.slice(1)}`,
           `sub-border-size=${s.edge ? +(s.edgeW * s.size / ns).toFixed(2) : 0}`,
           `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`,
-          // ponytail: margins cannot go below 0, so Position below about -4.7 sits at the bottom edge on desktop
           `sub-margin-y=${Math.round(Math.min(600, Math.max(0, 34 + s.pos * 7.2)))}`,
           // Forcing the ASS override here wins over Desktop's ASS Style Override without changing it
           s.assOv && 'sub-ass-override=force',
@@ -231,7 +230,8 @@
       + row('drop', 'Background color', '', color('bgColor'))
       + row('edge', 'Outline', 'Add an outline to improve readability', '<label class="tg"><input data-k="edge" type="checkbox"><i></i></label>')
       + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=15 step=.1'))
-      + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
+      // Desktop positions with mpv's bottom margin, which stops at the bottom edge (about -4.5)
+      + row('pos', 'Position', 'Below 0 goes lower', range('pos', `min=${desktop ? -4.5 : -10} max=40 step=.5`))
       // mpv's own setting, global to every ASS file: only the desktop client has it
       + (desktop ? row('font', 'Override ASS style', 'Use this style for ASS subtitles too (signs and effects may break)', '<label class="tg"><input data-k="assOv" type="checkbox"><i></i></label>') : '')
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
