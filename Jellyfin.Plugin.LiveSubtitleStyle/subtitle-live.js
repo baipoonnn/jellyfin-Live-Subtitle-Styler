@@ -146,7 +146,10 @@
       #subLiveAsk em{font-style:normal;font-weight:600;border-bottom:2px solid ${ACC}}
       @keyframes subLiveIn{from{opacity:0}}
       #subLivePanel .rs{display:flex;align-items:center;gap:.6em;padding:.65em 1em;border-radius:.7em;background:#ffffff0d;border:1px solid #ffffff1f;color:#fff;cursor:pointer;font:inherit}
-      #subLivePanel .rs:hover{background:#ffffff1a}`;
+      #subLivePanel .rs:hover{background:#ffffff1a}
+      #subLivePanel .lkn{margin:.3em 0 .5em;padding:.6em .8em;border-radius:.6em;background:#ffffff0d;border:1px solid ${ACC};font-size:.9em}
+      #subLivePanel .lkn[hidden]{display:none}
+      #subLivePanel [inert]{opacity:.45}`;
     document.head.append(ui);
 
     const P = {
@@ -179,7 +182,8 @@
     const panel = document.createElement('div');
     panel.id = 'subLivePanel';
     panel.hidden = true;
-    panel.innerHTML = row('size', 'Size', '', range('size', 'min=.5 max=5 step=.05'))
+    panel.innerHTML = '<div class="lkn" hidden></div>'
+      + row('size', 'Size', '', range('size', 'min=.5 max=5 step=.05'))
       + row('font', 'Font', '<span data-fs></span>', fontControl)
       + row('drop', 'Text color', '', color('color'))
       + row('alpha', 'Background', 'Adjust background opacity', range('bg', 'min=0 max=1 step=.05'))
@@ -318,6 +322,31 @@
     }));
     panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
 
+    // ASS and image subtitles are drawn by their own renderers (libass / libbitsub on the web, mpv on desktop): the style
+    // cannot reach them, so the panel is locked while one plays. The server says which subtitle stream this device plays.
+    const LOCK = { ass: 'ass', ssa: 'ass', pgssub: 'img', dvdsub: 'img', dvbsub: 'img', vobsub: 'img' };
+    let kind = '';
+    const lockUi = () => {
+      const locked = !!kind;
+      const note = panel.querySelector('.lkn');
+      note.hidden = !locked;
+      note.textContent = kind === 'img' ? 'Image subtitle (PGS / DVD): it cannot be restyled.' : 'ASS subtitle: styled by the file.';
+      // Fails open: unknown or plain text subtitles leave the panel as it is
+      panel.querySelectorAll('.r, .f').forEach(r => { if (r.querySelector('[data-k], [data-reset]')) r.inert = locked; });
+    };
+    const probe = async () => {
+      try {
+        const a = window.ApiClient;
+        const [ses] = await a.getSessions({ deviceId: a.deviceId() });
+        const i = ses.PlayState.SubtitleStreamIndex;
+        const st = ses.NowPlayingItem.MediaStreams.find(m => m.Type === 'Subtitle' && m.Index === i);
+        kind = LOCK[String(st?.Codec).toLowerCase()] || '';
+      } catch { kind = ''; }
+      lockUi();
+    };
+    // Rechecked while the panel is open, so a track switch is seen
+    setInterval(() => { if (!panel.hidden) probe(); }, 2000);
+
     let addPool = () => {};
     if (desktop) {
       const fi = panel.querySelector('input[data-k=font]'), fl = panel.querySelector('.fl');
@@ -395,6 +424,8 @@
       btn.onclick = () => {
         panel.hidden = !panel.hidden;
         if (!panel.hidden) {
+          lockUi();
+          probe();
           const r = btn.getBoundingClientRect();
           panel.style.right = Math.max(8, innerWidth - r.right - 8) + 'px';
           panel.style.bottom = (innerHeight - r.top + 12) + 'px';
