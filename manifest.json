@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.22.0",
+        "changelog": "Jellyfin Desktop: the 'Click Allow' hint no longer covers the panel (Desktop never shows a font permission box).",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.22.0.zip",
+        "checksum": "d04ceb575178f2fbd0fd1fa8ab14a239",
+        "timestamp": "2026-10-28T22:17:16Z"
+      },
+      {
         "version": "1.3.21.0",
         "changelog": "Jellyfin Desktop: Override ASS style now forces the override through the plugin's mpv config and leaves the Desktop ASS Style Override setting untouched.",
         "targetAbi": "12.1.0.0",

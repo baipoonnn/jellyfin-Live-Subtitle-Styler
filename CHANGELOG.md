@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.22.0
+- Jellyfin Desktop: the "Click Allow" hint no longer covers the panel. Desktop never shows a font permission box, so there was nothing to click.
+
 ## 1.3.21.0
 - Jellyfin Desktop: Override ASS style is now the plugin's own switch. When on, it forces mpv to apply the style to ASS subtitles whatever Desktop's ASS Style Override setting says, without changing that setting. When off, Desktop's setting applies as usual. If 1.3.20.0 had changed that setting to Force, your previous value is put back.
 
