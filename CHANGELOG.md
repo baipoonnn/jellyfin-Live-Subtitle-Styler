@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.20.0
+- The styler locks while an ASS/SSA or image subtitle (PGS, DVD, DVB) plays, with a note saying why: those are drawn by their own renderer and the style cannot reach them. Plain text subtitles work as before.
+- Jellyfin Desktop: new Override ASS style toggle. It sets mpv's ASS Style Override to Force so the style applies to ASS subtitles too (signs and effects may break), and puts your previous value back when turned off. The web player has no such override, so ASS stays locked there.
+
 ## 1.3.14.0
 - The Allow hint now stays on the panel if you close and reopen it while the browser prompt is open, and it appears again after the font permission is reset (no page reload needed). It is skipped when the permission is already blocked or granted.
 

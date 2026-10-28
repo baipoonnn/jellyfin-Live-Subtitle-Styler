@@ -52,7 +52,7 @@ Type any font name. Only fonts your browser can really use are suggested. If a f
 ## Troubleshooting
 
 - **Installed fonts are missing, or the status is red.** The browser is hiding them. In Brave set Shields > Advanced View > **Block fingerprinting** to Disabled for the site; in Firefox turn off `privacy.resistFingerprinting`. Google Fonts work either way.
-- **Subtitle does not change.** It must be an SRT or WebVTT track.
+- **Subtitle does not change.** It must be an SRT or WebVTT track. The panel locks for ASS and image subtitles (PGS, DVD); in Jellyfin Desktop, turn on Override ASS style to restyle ASS.
 - **No Aa button.** Hard refresh, and check the plugin is Active and File Transformation is installed.
 - **Desktop client shows "Browser not supported".** That page comes from another script on your server (for example a JavaScript Injector entry), not from this plugin.
 - **Desktop font not applied.** The name must match an installed font family exactly.

@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.20.0",
+        "changelog": "The styler locks while an ASS or image subtitle plays. Jellyfin Desktop: Override ASS style toggle.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.20.0.zip",
+        "checksum": "6b51bfa602b30bbbe1aaf308db019732",
+        "timestamp": "2026-10-28T22:04:41Z"
+      },
+      {
         "version": "1.3.14.0",
         "changelog": "The Allow hint stays with the panel when closed and reopened, and returns after the font permission is reset.",
         "targetAbi": "12.1.0.0",
