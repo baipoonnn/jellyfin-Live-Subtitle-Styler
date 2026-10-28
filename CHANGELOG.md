@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.21.0
+- Jellyfin Desktop: Override ASS style is now the plugin's own switch. When on, it forces mpv to apply the style to ASS subtitles whatever Desktop's ASS Style Override setting says, without changing that setting. When off, Desktop's setting applies as usual. If 1.3.20.0 had changed that setting to Force, your previous value is put back.
+
 ## 1.3.20.0
 - The styler locks while an ASS/SSA or image subtitle (PGS, DVD, DVB) plays, with a note saying why: those are drawn by their own renderer and the style cannot reach them. Plain text subtitles work as before.
 - Jellyfin Desktop: new Override ASS style toggle. It sets mpv's ASS Style Override to Force so the style applies to ASS subtitles too (signs and effects may break), and puts your previous value back when turned off. The web player has no such override, so ASS stays locked there.
