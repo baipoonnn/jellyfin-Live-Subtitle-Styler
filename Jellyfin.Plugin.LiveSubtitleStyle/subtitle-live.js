@@ -2,7 +2,7 @@
 // Adds an "Aa" button to the player OSD next to the gear. One <style> driven by values: changes repaint instantly.
 (() => {
   const init = () => {
-    const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, edgeW: 1.5, pos: 8, font: '' };
+    const KEY = 'subLive', D = { size: 1, color: '#ffffff', bg: 0, bgColor: '#000000', edge: 1, edgeW: 1.5, pos: 8, font: '', assOv: 0 };
     const ACC = 'var(--theme-primary-color,#e50914)';
     // Suggestions, filtered to the fonts this browser can really use (see avail); any installed font can still be typed in
     const FONTS = ['Arial', 'Helvetica', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Segoe UI', 'Calibri', 'Georgia', 'Times New Roman', 'Courier New', 'Consolas', 'Comic Sans MS', 'Impact'];
@@ -48,13 +48,13 @@
     const hex = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
     s = {
       size: num(s.size, .5, 5, D.size), color: hex(s.color, D.color), bg: num(s.bg, 0, 1, D.bg), bgColor: hex(s.bgColor, D.bgColor),
-      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .1, 15, D.edgeW), pos: num(s.pos, -10, 40, D.pos),
+      edge: s.edge ? 1 : 0, edgeW: num(s.edgeW, .1, 15, D.edgeW), pos: num(s.pos, -10, 40, D.pos), assOv: s.assOv ? 1 : 0,
       font: typeof s.font === 'string' && s.font.length <= 60 ? s.font : '',
     };
 
     // Jellyfin Desktop plays through mpv, which draws the subtitles itself, so the DOM rules below do nothing there.
     // Its settings bridge applies live: map the style onto the subtitles section and the manual mpv config (position, box)
-    let pushT = 0, ready = false;
+    let pushT = 0, ready = false, unforce = false;
     const push = () => {
       const j = window.jmpInfo?.settings;
       if (!j?.subtitles || !j.other || !window.api?.settings) return;
@@ -69,10 +69,15 @@
         };
         for (const k in v) if (j.subtitles[k] !== v[k]) j.subtitles[k] = v[k];
         // The settings list has no free position or box style, so own a marked block of the manual mpv config
-        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-size=${s.edge ? +s.edgeW.toFixed(2) : 0}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, '# /subLive'].join('\n');
+        // Desktop applies this config after its own subtitle settings, so forcing the ASS override here wins over the
+        // native ASS Style Override without changing it. Turned off, mpv keeps force until something sets it again:
+        // write the native value once, then drop the line so later native changes apply as usual.
+        const ass = s.assOv ? 'sub-ass-override=force' : unforce ? `sub-ass-override=${j.subtitles.ass_style_override || 'yes'}` : '';
+        const conf = ['# subLive', `sub-pos=${100 - s.pos}`, `sub-border-size=${s.edge ? +s.edgeW.toFixed(2) : 0}`, `sub-border-style=${s.bg > 0 ? 'background-box' : 'outline-and-shadow'}`, ass, '# /subLive'].filter(Boolean).join('\n');
         const text = String(j.other.other_conf ?? '').replace(/# subLive[\s\S]*?# \/subLive/g, '').trim();
         const next = (text ? text + '\n' : '') + conf;
         if (j.other.other_conf !== next) j.other.other_conf = next;
+        if (unforce) { unforce = false; setTimeout(push, 300); }
       }, 80);
     };
 
@@ -97,6 +102,14 @@
     };
     apply();
     ready = true; // the desktop client keeps its own settings until the first change here
+    // 1.3.20.0 set the native ASS Style Override to force: put the user's own value back, the toggle now forces it itself
+    try {
+      const p = localStorage.getItem('subLiveAssPrev'), j = window.jmpInfo?.settings?.subtitles;
+      if (p !== null && j) {
+        localStorage.removeItem('subLiveAssPrev');
+        if (j.ass_style_override === 'force') { j.ass_style_override = p; s.assOv = 1; apply(); }
+      }
+    } catch {}
 
     // Popup styling: static
     const ui = document.createElement('style');
@@ -192,7 +205,7 @@
       + row('weight', 'Outline thickness', 'Width of the outline in pixels', range('edgeW', 'min=.1 max=15 step=.1'))
       + row('pos', 'Position', 'Below 0 goes lower', range('pos', 'min=-10 max=40 step=.5'))
       // mpv's own setting, global to every ASS file: only the desktop client has it
-      + (desktop ? row('font', 'Override ASS style', 'Use this style for ASS subtitles too (signs and effects may break)', '<label class="tg"><input data-a type="checkbox"><i></i></label>') : '')
+      + (desktop ? row('font', 'Override ASS style', 'Use this style for ASS subtitles too (signs and effects may break)', '<label class="tg"><input data-k="assOv" type="checkbox"><i></i></label>') : '')
       + `<div class="f"><button class="rs" data-reset>${svg(P.reset, 20)}Reset to default</button></div>`;
     document.body.append(panel);
 
@@ -258,6 +271,7 @@
       paint(i);
       if (k === 'font') paintFont();
       if (k === 'edge') edgeUi();
+      if (k === 'assOv') { unforce = !s.assOv; lockUi(); }
       apply();
     });
     // In-page colour picker (desktop): saturation/brightness square plus a hue slider, writing into the hex box
@@ -322,24 +336,21 @@
         i.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }));
-    panel.querySelector('[data-reset]').onclick = () => { s = { ...D }; sync(); paintFont(); edgeUi(); apply(); };
+    panel.querySelector('[data-reset]').onclick = () => { s = { ...D, assOv: s.assOv }; sync(); paintFont(); edgeUi(); apply(); };
 
     // ASS and image subtitles are drawn by their own renderers (libass / libbitsub on the web, mpv on desktop): the style
     // cannot reach them, so the panel is locked while one plays. The server says which subtitle stream this device plays.
     const LOCK = { ass: 'ass', ssa: 'ass', pgssub: 'img', dvdsub: 'img', dvbsub: 'img', vobsub: 'img' };
     let kind = '';
-    const assOn = () => window.jmpInfo?.settings?.subtitles?.ass_style_override === 'force';
     const lockUi = () => {
-      const ov = panel.querySelector('[data-a]');
-      if (ov) ov.checked = assOn();
-      const locked = kind === 'img' || (kind === 'ass' && !(desktop && assOn()));
+      const locked = kind === 'img' || (kind === 'ass' && !(desktop && s.assOv));
       const note = panel.querySelector('.lkn');
       note.hidden = !locked;
       note.textContent = kind === 'img' ? 'Image subtitle (PGS / DVD): it cannot be restyled.'
         : desktop ? 'ASS subtitle: styled by the file. Turn on Override ASS style below to restyle it.'
         : 'ASS subtitle: styled by the file. Only Jellyfin Desktop can override it.';
       // Fails open: unknown or plain text subtitles leave the panel as it is
-      panel.querySelectorAll('.r, .f').forEach(r => { if (r.querySelector('[data-k], [data-reset]')) r.inert = locked; });
+      panel.querySelectorAll('.r, .f').forEach(r => { if (r.querySelector('[data-k]:not([data-k=assOv]), [data-reset]')) r.inert = locked; });
     };
     const probe = async () => {
       try {
@@ -353,21 +364,6 @@
     };
     // Rechecked while the panel is open, so a track switch is seen
     setInterval(() => { if (!panel.hidden) probe(); }, 2000);
-    // Tick: remember the user's own value and force mpv to apply the style to ASS. Untick: put that value back.
-    panel.querySelector('[data-a]')?.addEventListener('change', e => {
-      const j = window.jmpInfo?.settings?.subtitles;
-      if (!j) return;
-      if (e.target.checked) {
-        if (j.ass_style_override !== 'force') try { localStorage.setItem('subLiveAssPrev', j.ass_style_override ?? ''); } catch {}
-        j.ass_style_override = 'force';
-        push();
-      } else {
-        let prev = '';
-        try { prev = localStorage.getItem('subLiveAssPrev') ?? ''; } catch {}
-        j.ass_style_override = prev === 'force' ? '' : prev;
-      }
-      lockUi();
-    });
 
     let addPool = () => {};
     if (desktop) {
