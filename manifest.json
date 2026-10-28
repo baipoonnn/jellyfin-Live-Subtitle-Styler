@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.25.0",
+        "changelog": "The panel note shows only when the panel is locked.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.25.0.zip",
+        "checksum": "22062c91bef63d0f2497187a3a35f9b1",
+        "timestamp": "2026-10-28T22:55:51Z"
+      },
+      {
         "version": "1.3.24.0",
         "changelog": "Jellyfin Desktop: Position now moves forced ASS subtitles, and the panel unlocks for ASS when Desktop's own ASS Style Override is Force or Strip.",
         "targetAbi": "12.1.0.0",

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.25.0
+- The note at the top of the panel shows only when the panel is locked. The note saying Desktop's own Force applies the style to ASS is removed.
+
 ## 1.3.24.0
 - Jellyfin Desktop: Position now moves ASS subtitles when the ASS override is forced (by Override ASS style or by Desktop's own Force / Strip). mpv never applies the bottom margin to ASS, so forced subtitles are placed with sub-pos instead.
 - Jellyfin Desktop: the panel unlocks for ASS when Desktop's own ASS Style Override is Force or Strip, since the style applies to ASS then, with a note saying so.
