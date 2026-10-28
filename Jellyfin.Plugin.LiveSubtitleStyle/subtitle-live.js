@@ -125,6 +125,18 @@
           if (j.ass_style_override === 'force') { j.ass_style_override = p; s.assOv = 1; sync(); apply(); }
         }
       } catch {}
+      // Up to 1.3.22.0 the style was written into Desktop's own subtitle settings: put Desktop's defaults back where
+      // they still hold what this plugin wrote, and have mpv drop the sub-scale / sub-pos it kept from back then
+      try {
+        const n = window.jmpInfo?.settings?.subtitles;
+        if (n && !localStorage.getItem('subLiveNative')) {
+          localStorage.setItem('subLiveNative', '1');
+          const old = { size: Math.round(32 * s.size), font: s.font || 'sans-serif', color: s.color, border_color: '#000000', background_color: s.bgColor, background_transparency: Math.round(s.bg * 255).toString(16).padStart(2, '0') };
+          const def = { size: -1, font: 'sans-serif', color: '', border_color: '', background_color: '', background_transparency: '' };
+          for (const k in old) if (n[k] === old[k] && n[k] !== def[k]) n[k] = def[k];
+          if (/# subLive/.test(window.jmpInfo.settings.other?.other_conf ?? '')) { reset = true; push(); }
+        }
+      } catch {}
     });
 
     // Popup styling: static
