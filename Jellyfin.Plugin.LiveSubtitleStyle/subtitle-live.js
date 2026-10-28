@@ -115,14 +115,17 @@
     };
     apply();
     ready = true; // the desktop client keeps its own settings until the first change here
-    // 1.3.20.0 set the native ASS Style Override to force: put the user's own value back, the toggle now forces it itself
-    try {
-      const p = localStorage.getItem('subLiveAssPrev'), j = window.jmpInfo?.settings?.subtitles;
-      if (p !== null && j) {
-        localStorage.removeItem('subLiveAssPrev');
-        if (j.ass_style_override === 'force') { j.ass_style_override = p; s.assOv = 1; apply(); }
-      }
-    } catch {}
+    // Desktop settings reach the native side only once its bridge is ready (window.initCompleted)
+    Promise.resolve(window.initCompleted).then(() => {
+      // 1.3.20.0 set the native ASS Style Override to force: put the user's own value back, the toggle now forces it itself
+      try {
+        const p = localStorage.getItem('subLiveAssPrev'), j = window.jmpInfo?.settings?.subtitles;
+        if (p !== null && j) {
+          localStorage.removeItem('subLiveAssPrev');
+          if (j.ass_style_override === 'force') { j.ass_style_override = p; s.assOv = 1; sync(); apply(); }
+        }
+      } catch {}
+    });
 
     // Popup styling: static
     const ui = document.createElement('style');
