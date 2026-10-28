@@ -381,9 +381,9 @@
       const native = desktop && /^(force|strip)$/.test(window.jmpInfo?.settings?.subtitles?.ass_style_override);
       const locked = kind === 'img' || (kind === 'ass' && !(desktop && s.assOv) && !native);
       const note = panel.querySelector('.lkn');
-      note.hidden = !locked && !(kind === 'ass' && native && !s.assOv);
+      // Shown only when the panel is locked: a working panel needs no explanation
+      note.hidden = !locked;
       note.textContent = kind === 'img' ? 'Image subtitle (PGS / DVD): it cannot be restyled.'
-        : !locked ? "ASS subtitle: Desktop's own ASS Style Override applies this style to it."
         : desktop ? 'ASS subtitle: styled by the file. Turn on Override ASS style below to restyle it.'
         : 'ASS subtitle: styled by the file. Only Jellyfin Desktop can override it.';
       // Fails open: unknown or plain text subtitles leave the panel as it is
