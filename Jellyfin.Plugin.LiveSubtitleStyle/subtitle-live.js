@@ -399,8 +399,9 @@
       if (st !== 'granted') loaded = false;   // permission reset or never given: ask again
       if (loaded || st === 'denied') { pending = false; return; }
       // dim + blur the panel (a child of it, so it follows the panel when it is closed and reopened) while the browser prompt (top-left) is open
+      // Jellyfin Desktop reports "prompt" but never shows a permission box: no hint there
       let ask;
-      if (st === 'prompt') {
+      if (st === 'prompt' && !desktop) {
         ask = document.createElement('div');
         ask.id = 'subLiveAsk';
         ask.innerHTML = '<div><b>&#8598; Click Allow</b>Your browser is asking to list the fonts installed on this device. Press <em>Allow</em> in the box at the top-left so Live Subtitle Style can show your fonts.</div>';
