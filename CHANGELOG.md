@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.26.0
+- Jellium Desktop: the style options now work. The styler sends them to mpv through the new `playerSetSubtitleOption` call (needs a jellium-desktop build that has it), and the font box no longer triggers the browser's font permission prompt.
+
 ## 1.3.25.0
 - The note at the top of the panel shows only when the panel is locked. The note saying Desktop's own Force applies the style to ASS is removed.
 

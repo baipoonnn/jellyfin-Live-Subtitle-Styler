@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.26.0",
+        "changelog": "Jellium Desktop: the style options work (needs a jellium-desktop build with playerSetSubtitleOption), and the font box no longer asks for permission.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.26.0.zip",
+        "checksum": "70f20bbe941d730103412708f4e41b55",
+        "timestamp": "2026-11-06T10:46:45Z"
+      },
+      {
         "version": "1.3.25.0",
         "changelog": "The panel note shows only when the panel is locked.",
         "targetAbi": "12.1.0.0",
