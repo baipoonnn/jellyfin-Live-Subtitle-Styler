@@ -9,6 +9,14 @@
     "imageUrl": "",
     "versions": [
       {
+        "version": "1.3.28.0",
+        "changelog": "Scrolling over the style panel no longer changes the player volume.",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/baipoonnn/jellyfin-Live-Subtitle-Styler/main/dist/LiveSubtitleStyle_1.3.28.0.zip",
+        "checksum": "c517e66c4a0d9af76e80f6eaa2d98e4b",
+        "timestamp": "2026-11-06T14:17:00Z"
+      },
+      {
         "version": "1.3.27.0",
         "changelog": "window.LiveSubtitleStyle.open(rect) lets a theme open the style panel from its own menu.",
         "targetAbi": "12.1.0.0",

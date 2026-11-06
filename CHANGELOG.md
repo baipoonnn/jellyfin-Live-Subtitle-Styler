@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.28.0
+- Scrolling the mouse wheel over the style panel no longer changes the player volume. The web player turns any wheel over the page into volume changes unless one of its own dialogs is open; the panel now keeps the wheel to itself and still scrolls.
+
 ## 1.3.27.0
 - New `window.LiveSubtitleStyle.open(rect)`: a theme that hides the Aa button can open the style panel from its own control, for example a row in a custom subtitle menu. The panel opens above the given rectangle (a `getBoundingClientRect()` result), after the current click has finished. The Aa button works as before.
 
