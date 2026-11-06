@@ -1,7 +1,7 @@
 ---
 name: "Live Subtitle Style"
 guid: "5b0c3a8e-7d1f-4c62-9a44-3e2f6b1d8c07"
-version: "1.3.27.0"
+version: "1.3.28.0"
 targetAbi: "12.1.0.0"
 framework: "net10.0"
 overview: "Live subtitle styling in the Jellyfin web player and desktop client"
@@ -14,6 +14,7 @@ owner: "local"
 artifacts:
 - "Jellyfin.Plugin.LiveSubtitleStyle.dll"
 changelog: >
+  1.3.28.0: scrolling over the style panel no longer changes the player volume.
   1.3.27.0: window.LiveSubtitleStyle.open(rect) lets a theme open the panel from its own menu.
   1.3.26.0: works in Jellium Desktop (style reaches mpv); no font permission prompt there.
   1.3.25.0: the panel note shows only when the panel is locked.

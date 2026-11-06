@@ -381,6 +381,9 @@
         return;
       }
     });
+    // The web player changes the volume on any wheel over the document unless one of its own dialogs is open:
+    // scrolling the panel must not do that (the panel still scrolls, only the event stops here)
+    panel.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
     // Keys typed in the panel must not reach the player's shortcuts (for example G and H move the subtitle offset)
     ['keydown', 'keyup', 'keypress'].forEach(ev => panel.addEventListener(ev, e => {
       if (ev === 'keydown' && e.key === 'Escape') panel.hidden = true;
