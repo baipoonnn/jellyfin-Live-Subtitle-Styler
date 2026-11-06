@@ -491,6 +491,17 @@
     // rebuilds them when the episode changes, so check each gear instead of looking for a single element.
     // Anywhere in the same row: other plugins (the WebGPU tune button) insert their own buttons next to the gear
     const has = g => !!g.parentElement?.querySelector(':scope > .btnSubLive');
+    // Opens the panel above a rectangle (an OSD button's getBoundingClientRect()).
+    const openAt = r => {
+      panel.hidden = false;
+      lockUi();
+      probe();
+      panel.style.right = Math.max(8, innerWidth - r.right - 8) + 'px';
+      panel.style.bottom = (innerHeight - r.top + 12) + 'px';
+    };
+    // For themes that hide the Aa button and offer their own entry, e.g. a row in a custom subtitle menu.
+    // Deferred so the document click handler below, which closes the panel on outside clicks, finishes first.
+    window.LiveSubtitleStyle = { open: r => setTimeout(() => openAt(r)) };
     const mountOn = (gear, before) => {
       // Clone the gear: same element type, classes and styling as the other OSD buttons
       const btn = gear.cloneNode(false);
@@ -501,14 +512,8 @@
       btn.setAttribute('aria-label', 'Subtitle style');
       btn.innerHTML = AA;
       btn.onclick = () => {
-        panel.hidden = !panel.hidden;
-        if (!panel.hidden) {
-          lockUi();
-          probe();
-          const r = btn.getBoundingClientRect();
-          panel.style.right = Math.max(8, innerWidth - r.right - 8) + 'px';
-          panel.style.bottom = (innerHeight - r.top + 12) + 'px';
-        }
+        if (panel.hidden) openAt(btn.getBoundingClientRect());
+        else panel.hidden = true;
       };
       before ? gear.before(btn) : gear.after(btn);
     };

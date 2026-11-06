@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.27.0
+- New `window.LiveSubtitleStyle.open(rect)`: a theme that hides the Aa button can open the style panel from its own control, for example a row in a custom subtitle menu. The panel opens above the given rectangle (a `getBoundingClientRect()` result), after the current click has finished. The Aa button works as before.
+
 ## 1.3.26.0
 - Jellium Desktop: the style options now work. The styler sends them to mpv through the new `playerSetSubtitleOption` call (needs a jellium-desktop build that has it), and the font box no longer triggers the browser's font permission prompt.
 
