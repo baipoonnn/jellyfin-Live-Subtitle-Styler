@@ -11,7 +11,9 @@
     // Sample text in several scripts, so a font is detected whichever script it covers
     const PROBES = ['mwiQ0Oil', 'Яжфыя', 'αβγδε', 'مرحبا', 'שלום', 'नमस्ते', 'สวัสดี', '你好世界', 'こんにちは', '안녕하세요'];
     // Jellyfin Desktop draws subtitles with mpv and the computer's fonts: the browser's font checks and Google Fonts do not apply
-    const desktop = !!window.jmpInfo?.settings?.subtitles;
+    // Jellium Desktop has no subtitle settings of its own: a native call sets the mpv options directly
+    const jellium = typeof window.jmpNative?.playerSetSubtitleOption === 'function';
+    const desktop = !!window.jmpInfo?.settings?.subtitles || jellium;
     const family = n => /^[A-Za-z0-9][A-Za-z0-9 ]{0,40}$/.test(n);
     // True when this browser can really render the font: its text measures differently from every fallback for at least one script
     const avail = n => {
@@ -59,6 +61,26 @@
     // since mpv also applies those to ASS; with the override off ASS looks exactly as Desktop's own settings make it.
     let pushT = 0, ready = false, reset = false, wasForced = false;
     const push = () => {
+      if (jellium) {
+        if (pushT) return;
+        pushT = setTimeout(() => {
+          pushT = 0;
+          // Same mpv values as below; ASS is touched only while the override is on (sub-pos moves it, so it resets to 100)
+          const o = {
+            'sub-font': s.font.replace(/[\r\n]/g, ''),
+            'sub-font-size': +(38 * s.size).toFixed(2),
+            'sub-color': s.color, 'sub-border-color': '#000000',
+            'sub-back-color': `#${Math.round(s.bg * 255).toString(16).padStart(2, '0')}${s.bgColor.slice(1)}`,
+            'sub-border-size': s.edge ? +(s.edgeW * s.size).toFixed(2) : 0,
+            'sub-border-style': s.bg > 0 ? 'background-box' : 'outline-and-shadow',
+            'sub-margin-y': s.assOv ? 34 : Math.round(Math.min(600, Math.max(0, 34 + s.pos * 7.2))),
+            'sub-pos': s.assOv ? 100 - s.pos : 100,
+            'sub-ass-override': s.assOv ? 'force' : 'scale',
+          };
+          for (const k in o) if (k !== 'sub-font' || o[k]) window.jmpNative.playerSetSubtitleOption(k, String(o[k]));
+        }, 80);
+        return;
+      }
       const j = window.jmpInfo?.settings;
       if (!j?.subtitles || !j.other || !window.api?.settings) return;
       // Throttle, not debounce: a debounce never fires while a slider is being dragged
@@ -430,7 +452,8 @@
     // Chrome can list the fonts really installed on this device (asks permission): fills the suggestions with exact names
     let loaded = false, pending = false;
     panel.querySelector('input[data-k=font]').addEventListener('focus', async () => {
-      if (pending || !window.queryLocalFonts) return;
+      // Jellium's browser would show a real permission box: it checks the known names instead
+      if (pending || jellium || !window.queryLocalFonts) return;
       pending = true;
       const st = await navigator.permissions?.query({ name: 'local-fonts' }).then(p => p.state, () => 'prompt') || 'prompt';
       if (st !== 'granted') loaded = false;   // permission reset or never given: ask again
